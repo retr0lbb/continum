@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { WeeklySquares } from "../../components/weekly-squares";
+import { Tab, TabSwitcher } from "../../components/tabSwitcher";
 
 
 export function MainPage(){
@@ -18,11 +19,11 @@ export function MainPage(){
 
         <div className="w-full h-px bg-main-text/10"/>
 
-        <div className="flex items-center justify-start px-3 py-0.5 gap-4">
-            <p className="text-lg text-accent underline">Summary</p> <div className="w-0.5 h-full bg-main-text/20 rounded-full" />
-            <p className="text-lg text-main-text">Tasks</p> <div className="w-0.5 h-full bg-main-text/20 rounded-full" />
-            <p className="text-lg text-main-text">Notes</p>
-        </div>
+        <TabSwitcher>
+            <Tab name="Summary" isSelected />
+            <Tab name="Tasks" />
+            <Tab name="Notes" />
+        </TabSwitcher>
 
         <div className="w-full h-px bg-main-text/10"/>
 
