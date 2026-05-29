@@ -27,5 +27,13 @@ export function MainPage(){
 
         <div className="w-full h-px bg-main-text/10"/>
 
+        <div className="flex flex-1">
+            <div className="flex gap-2">
+                <div className="flex flex-col items-center">
+                    
+                </div>
+            </div>
+        </div>
+
     </main>
 }
