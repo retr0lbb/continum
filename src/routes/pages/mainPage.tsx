@@ -1,7 +1,6 @@
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { WeeklySquares } from "../../components/weekly-squares";
 import { Tab, TabSwitcher } from "../../components/tabSwitcher";
-import { DiffCard } from "../../components/diff-card";
 import { SummaryTab } from "../../components/tabs/summary-tab";
 
 
