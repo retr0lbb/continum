@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { WeeklySquares } from "../../components/weekly-squares";
 import { Tab, TabSwitcher } from "../../components/tabSwitcher";
 import { SummaryTab } from "../../components/tabs/summary-tab";
+import { TasksTab } from "../../components/tabs/tasks-tab";
 
 
 export function MainPage(){
@@ -28,7 +29,8 @@ export function MainPage(){
 
         <div className="w-full h-px bg-main-text/10"/>
 
-        <SummaryTab />
+        {/* <SummaryTab /> */}
+        <TasksTab />
 
     </main>
 }
