@@ -17,6 +17,12 @@ const columns = [
             "Fazer Api do mimer",
             "Fazer Api do mimer",
             "Fazer Api do mimer",
+            "Fazer Api do mimer",
+            "Fazer Api do mimer",
+            "Fazer Api do mimer",
+            "Fazer Api do mimer",
+            "Fazer Api do mimer",
+
         ]
     },
     {
@@ -30,10 +36,11 @@ const columns = [
 ]
 
 export function TasksTab(){
-    const { handleKeyDown, isSelected } = useTaskSelection(columns)
+    const { handleKeyDown, isSelected, containerRef } = useTaskSelection(columns)
 
     return (
         <div
+            ref={containerRef}
             className="w-full h-full flex flex-col outline-none overflow-hidden"
             onKeyDown={handleKeyDown}
             tabIndex={0}
@@ -82,12 +89,22 @@ const taskCardVariants = tv({
         selected: {
             true: "text-accent border-accent transition-all"
         }
-    }
+    },
+    compoundVariants: [
+        {
+            selected: true, 
+            status: "done", 
+            className: "bg-background-main text-accent border-accent transition-all"
+        }
+    ]
 })
 
 export function TaskCard(props: TaskCardProps){
     return(
-        <p className={taskCardVariants({className: props.className, status: props.status, selected: props.selected})}>
+        <p
+            className={taskCardVariants({className: props.className, status: props.status, selected: props.selected})}
+            data-selected={props.selected ? "true" : undefined}
+        >
             {props.text}
         </p>
     )

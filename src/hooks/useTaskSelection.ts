@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 
 interface UseTaskSelectionColumn {
   tasks: unknown[]
@@ -8,6 +8,8 @@ export function useTaskSelection(columns: UseTaskSelectionColumn[]) {
   const columnsRef = useRef(columns)
   columnsRef.current = columns
 
+  const containerRef = useRef<HTMLDivElement>(null)
+
   const [selectedCol, setSelectedCol] = useState<number | null>(null)
   const [selectedRow, setSelectedRow] = useState<number | null>(null)
 
@@ -15,6 +17,12 @@ export function useTaskSelection(columns: UseTaskSelectionColumn[]) {
     (col: number, row: number) => selectedCol === col && selectedRow === row,
     [selectedCol, selectedRow]
   )
+
+  useEffect(() => {
+    if (selectedCol === null || selectedRow === null) return
+    const el = containerRef.current?.querySelector('[data-selected="true"]')
+    el?.scrollIntoView({ block: "nearest" })
+  }, [selectedCol, selectedRow])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -53,5 +61,5 @@ export function useTaskSelection(columns: UseTaskSelectionColumn[]) {
     [selectedCol, selectedRow]
   )
 
-  return { selectedCol, selectedRow, handleKeyDown, isSelected }
+  return { selectedCol, selectedRow, handleKeyDown, isSelected, containerRef }
 }
