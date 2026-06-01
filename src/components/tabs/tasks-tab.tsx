@@ -5,33 +5,17 @@ const columns = [
     {
         status: "todo" as const,
         label: "Todo",
-        tasks: [
-            "Fazer Api do mimer teste com mais de uma linha",
-            "Fazer Api do mimer teste com mais de uma linha",
-        ]
+        tasks: Array.from({length: 5}).map((_, index) => `${index+1}# Task`)
     },
     {
         status: "doing" as const,
         label: "Doing",
-        tasks: [
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-
-        ]
+        tasks: Array.from({length: 5}).map((_, index) => `${index+1}# Task`)
     },
     {
         status: "done" as const,
         label: "Done",
-        tasks: [
-            "Fazer Api do mimer",
-            "Fazer Api do mimer",
-        ]
+        tasks: Array.from({length: 5}).map((_, index) => `${index+1}# Task`)
     },
 ]
 
