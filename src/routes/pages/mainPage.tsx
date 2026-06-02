@@ -13,7 +13,7 @@ export function MainPage(){
 
     return <main className="w-180 h-100 bg-background-main flex flex-col p-3 gap-2">
         <div className="flex items-center justify-between">
-            <div className="flex items-center justify-center gap-1">
+            <div data-tauri-drag-region className="flex items-center justify-center gap-1">
                 <ArrowLeft className="size-5 text-main-text"/>
                 <h1 className="text-lg text-main-text">Dinheirama</h1>
             </div>
