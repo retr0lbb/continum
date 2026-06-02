@@ -34,7 +34,7 @@ export function MainPage(){
 
         <div className="w-full h-px bg-main-text/10"/>
 
-       <SummaryTab  isVisible={tab === "summary" }/>
+        <SummaryTab  isVisible={tab === "summary" }/>
         <TasksTab isVisible={tab === "task"} /> 
         <NotesTab isVisible={tab === "notes"} />
     </main>
