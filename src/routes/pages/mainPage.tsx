@@ -4,9 +4,13 @@ import { Tab, TabSwitcher } from "../../components/tabSwitcher";
 import { SummaryTab } from "../../components/tabs/summary-tab";
 import { TasksTab } from "../../components/tabs/tasks-tab";
 import { NotesTab } from "../../components/tabs/notes-tab";
+import { useState } from "react";
 
 
 export function MainPage(){
+
+    const [tab, setTab] = useState<"task" | "summary" | "notes">("summary")
+
     return <main className="w-180 h-100 bg-background-main flex flex-col p-3 gap-2">
         <div className="flex items-center justify-between">
             <div className="flex items-center justify-center gap-1">
@@ -23,16 +27,15 @@ export function MainPage(){
         <div className="w-full h-px bg-main-text/10"/>
 
         <TabSwitcher>
-            <Tab name="Summary" isSelected />
-            <Tab name="Tasks" />
-            <Tab name="Notes" />
+            <Tab onClick={() => setTab("summary")} name="Summary" isSelected={tab === "summary"} />
+            <Tab onClick={() => setTab("task")} name="Tasks" isSelected={tab === "task"}/>
+            <Tab onClick={() => setTab("notes")} name="Notes" isSelected={tab === "notes"}/>
         </TabSwitcher>
 
         <div className="w-full h-px bg-main-text/10"/>
 
-        {/* <SummaryTab /> */}
-        {/* <TasksTab /> */}
-        <NotesTab />
-
+       <SummaryTab  isVisible={tab === "summary" }/>
+        <TasksTab isVisible={tab === "task"} /> 
+        <NotesTab isVisible={tab === "notes"} />
     </main>
 }

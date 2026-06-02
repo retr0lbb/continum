@@ -19,13 +19,17 @@ const columns = [
     },
 ]
 
-export function TasksTab(){
+interface TasksTabProps{
+    isVisible?: boolean
+}
+
+export function TasksTab(props: TasksTabProps){
     const { handleKeyDown, isSelected, containerRef } = useTaskSelection(columns)
 
     return (
         <div
             ref={containerRef}
-            className="w-full h-full flex flex-col outline-none overflow-hidden"
+            className={`w-full h-full flex flex-col outline-none overflow-hidden ${!props.isVisible && "hidden"}`}
             onKeyDown={handleKeyDown}
             tabIndex={0}
         >

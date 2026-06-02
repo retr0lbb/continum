@@ -14,7 +14,8 @@ export function TabSwitcher(props: TabSwitcherProps){
 
 interface TabProps{
     name: string,
-    isSelected?: boolean
+    isSelected?: boolean,
+    onClick?: () => void
 }
 
 const tabVariant = tv({
@@ -30,7 +31,7 @@ const tabVariant = tv({
 export function Tab(props: TabProps){
     return(
         <>
-            <p className={tabVariant({isSelected: props.isSelected})}>{props.name}</p>
+            <button onClick={props.onClick} className={tabVariant({isSelected: props.isSelected})}>{props.name}</button>
             <div className="h-full w-0.5 bg-main-text/10 rounded-full" />
         </>
     )

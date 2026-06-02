@@ -1,9 +1,11 @@
 import { DiffCard } from "../diff-card";
 
-
-export function SummaryTab(){
+interface SummaryTabProps{
+    isVisible?: boolean
+}
+export function SummaryTab(props: SummaryTabProps){
     return(
-        <div className="flex flex-1">
+        <div className={`flex flex-1 ${!props.isVisible && "hidden"}`}>
             <div className="flex gap-2">
                 <div className="flex flex-col items-center gap-2.5 w-1/2 pb-2 overflow-hidden">
                     <p className="w-full text-muted-text text-lg font-medium text-center">Done</p>
