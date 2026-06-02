@@ -1,5 +1,5 @@
-import {tv} from "tailwind-variants"
-import {ChevronRight} from "lucide-react"
+import { tv } from "tailwind-variants"
+import { ChevronRight } from "lucide-react"
 
 const textVariant = tv({
     base: "text-main-text text-lg font-medium",
@@ -8,7 +8,7 @@ const textVariant = tv({
             true: "text-accent underline underline-offset-2 text-lg font-medium"
         }
     }
-    
+
 })
 
 const iconVariant = tv({
@@ -24,20 +24,21 @@ const iconVariant = tv({
     }
 })
 
-interface ProjectLabelProps{
+interface ProjectLabelProps {
     name: string
     lastUpdate: string
-    isSelected?: boolean
+    isSelected?: boolean,
+    onClick: () => void
 }
 
-export function ProjectLabel(props: ProjectLabelProps){
+export function ProjectLabel(props: ProjectLabelProps) {
     return (
-        <div className="flex items-center justify-center gap-1 cursor-pointer">
-            <div className={iconVariant({selected: props.isSelected})} >
+        <div className="flex items-center justify-center gap-1 cursor-pointer" onClick={props.onClick}>
+            <div className={iconVariant({ selected: props.isSelected })} >
                 <ChevronRight />
             </div>
 
-            <p className={textVariant({selected: props.isSelected})}>{props.name}</p>
+            <p className={textVariant({ selected: props.isSelected })}>{props.name}</p>
             <p className="text-muted-text pl-2">{props.lastUpdate} dias atrás</p>
         </div>
     )

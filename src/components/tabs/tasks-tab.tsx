@@ -5,25 +5,25 @@ const columns = [
     {
         status: "todo" as const,
         label: "Todo",
-        tasks: Array.from({length: 5}).map((_, index) => `${index+1}# Task`)
+        tasks: ["Implementar Api no Front", "Escrever Dockerfile"]
     },
     {
         status: "doing" as const,
         label: "Doing",
-        tasks: Array.from({length: 5}).map((_, index) => `${index+1}# Task`)
+        tasks: ["Resolver Bug da função 'Calcular juros'"]
     },
     {
         status: "done" as const,
         label: "Done",
-        tasks: Array.from({length: 5}).map((_, index) => `${index+1}# Task`)
+        tasks: ["Implementar paginação nativa", "Adicionar coluna 'created_at'"]
     },
 ]
 
-interface TasksTabProps{
+interface TasksTabProps {
     isVisible?: boolean
 }
 
-export function TasksTab(props: TasksTabProps){
+export function TasksTab(props: TasksTabProps) {
     const { handleKeyDown, isSelected, containerRef } = useTaskSelection(columns)
 
     return (
@@ -60,7 +60,7 @@ export function TasksTab(props: TasksTabProps){
     )
 }
 
-interface TaskCardProps{
+interface TaskCardProps {
     text: string,
     status: "todo" | "doing" | "done",
     selected?: boolean,
@@ -81,17 +81,17 @@ const taskCardVariants = tv({
     },
     compoundVariants: [
         {
-            selected: true, 
-            status: "done", 
+            selected: true,
+            status: "done",
             className: "bg-background-main text-accent border-accent transition-all"
         }
     ]
 })
 
-export function TaskCard(props: TaskCardProps){
-    return(
+export function TaskCard(props: TaskCardProps) {
+    return (
         <p
-            className={taskCardVariants({className: props.className, status: props.status, selected: props.selected})}
+            className={taskCardVariants({ className: props.className, status: props.status, selected: props.selected })}
             data-selected={props.selected ? "true" : undefined}
         >
             {props.text}

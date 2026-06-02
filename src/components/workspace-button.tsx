@@ -19,6 +19,6 @@ export function WorkspaceButton() {
         className="w-1/4 h-24 rounded-md bg-main-text/5 hover:bg-main-text/10 p-2 transition-colors"
         onClick={handleSelectWorkspace}
     >
-        <p>Workspace</p>
+        <p className="text-main-text">Abrir Workspace</p>
     </button>
 }
