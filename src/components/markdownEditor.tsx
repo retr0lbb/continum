@@ -38,7 +38,7 @@ export function MarkdownEditor({
       theme="dark"
       extensions={[markdown({ base: markdownLanguage }), markdownHeadingStyle]}
       onChange={(value) => onChange?.(value)}
-      className="w-full overflow-y-scroll border border-main-text/20 rounded"
+      className="w-full overflow-y-scroll border max-h-full border-main-text/20 rounded scrollbar-none"
       basicSetup={{
         lineNumbers: false,
         foldGutter: true,
