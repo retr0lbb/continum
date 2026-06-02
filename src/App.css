@@ -12,3 +12,19 @@
   --color-accent: #E7715F
 
 }
+
+.cm-header {
+  font-weight: bold;
+}
+
+.cm-h1 {
+  font-size: 2rem;
+}
+
+.cm-h2 {
+  font-size: 1.5rem;
+}
+
+.cm-h3 {
+  font-size: 1.25rem;
+}

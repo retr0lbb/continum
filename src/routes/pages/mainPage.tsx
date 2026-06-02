@@ -3,6 +3,7 @@ import { WeeklySquares } from "../../components/weekly-squares";
 import { Tab, TabSwitcher } from "../../components/tabSwitcher";
 import { SummaryTab } from "../../components/tabs/summary-tab";
 import { TasksTab } from "../../components/tabs/tasks-tab";
+import { NotesTab } from "../../components/tabs/notes-tab";
 
 
 export function MainPage(){
@@ -30,7 +31,8 @@ export function MainPage(){
         <div className="w-full h-px bg-main-text/10"/>
 
         {/* <SummaryTab /> */}
-        <TasksTab />
+        {/* <TasksTab /> */}
+        <NotesTab />
 
     </main>
 }

@@ -63,7 +63,8 @@ interface TaskCardProps{
     className?: string
 }
 const taskCardVariants = tv({
-    base: "p-2.5 flex items-center justify-center overflow-hidden w-full rounded-sm text-center cursor-pointer font-medium select-none shrink-0",
+    base: `p-2.5 flex items-center justify-center overflow-hidden 
+    w-full rounded-sm text-center cursor-pointer font-medium select-none shrink-0`,
     variants: {
         status: {
             todo: "border border-muted-text text-muted-text",
