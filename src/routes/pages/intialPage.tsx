@@ -1,17 +1,21 @@
 import { ProjectLabel } from "../../components/project-label";
 import { WorkspaceButton } from "../../components/workspace-button";
 import { useNavigate } from "react-router";
+import { useWorkspace } from "../../hooks/useGetWorkspace";
 
 export function InitialPage() {
     const navigate = useNavigate();
+    const {loading, selectWorkspace, workspace} = useWorkspace()
 
     function navigateToScreen() {
         navigate("/project");
     }
+
+
     return <main className="w-screen h-screen bg-background-main flex flex-col p-3 gap-2">
         <div data-tauri-drag-region className="w-full flex items-center justify-between">
             <h1 className="font-normal text-main-text">Projetos</h1>
-            <p className="font-normal text-main-text">Workspace - None</p>
+            <p className="font-normal text-main-text">Workspace: {workspace ?? "none"}</p>
         </div>
 
         <div className="w-full h-0.5 rounded-full bg-main-text/10" />
@@ -24,7 +28,7 @@ export function InitialPage() {
             <ProjectLabel onClick={() => navigateToScreen()} name="Tamo-junto" lastUpdate="3" />
             <ProjectLabel onClick={() => navigateToScreen()} name="Continum" lastUpdate="3" /> */}
 
-            <WorkspaceButton />
+            <WorkspaceButton isVisible={workspace !== null} onClick={selectWorkspace} />
         </div>
     </main>
 }

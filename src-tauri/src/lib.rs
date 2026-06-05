@@ -1,5 +1,5 @@
 use std::fs;
-
+use std::sync::Mutex; // <- tira o Arc, não precisa mais
 use serde::Serialize;
 use tauri::{
     menu::{Menu, MenuItem},
@@ -14,14 +14,16 @@ struct FolderEntry {
     path: String,
 }
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+#[derive(Default)]
+struct DialogState(Mutex<bool>);
 
-/// Opens a native folder picker dialog and returns the selected folder path.
 #[tauri::command]
-async fn select_workspace(app: tauri::AppHandle) -> Result<Option<String>, String> {
+async fn select_workspace(
+    app: tauri::AppHandle,
+) -> Result<Option<String>, String> {
+    // Acende a flag via app handle
+    app.state::<DialogState>().0.lock().unwrap().clone_from(&true);
+
     let app_clone = app.clone();
     let folder = tauri::async_runtime::spawn_blocking(move || {
         app_clone
@@ -34,18 +36,18 @@ async fn select_workspace(app: tauri::AppHandle) -> Result<Option<String>, Strin
     .await
     .map_err(|e| e.to_string())?;
 
-    // Re-show the window after the dialog closes (it hides on focus loss)
+    // Apaga a flag
+    app.state::<DialogState>().0.lock().unwrap().clone_from(&false);
+
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.show();
         let _ = window.set_focus();
     }
 
     println!("Selected folder: {:?}", folder);
-
     Ok(folder)
 }
 
-/// Given a workspace path, returns all immediate subdirectory names and paths.
 #[tauri::command]
 fn list_workspace_folders(workspace_path: String) -> Result<Vec<FolderEntry>, String> {
     let entries = fs::read_dir(&workspace_path)
@@ -69,17 +71,15 @@ fn list_workspace_folders(workspace_path: String) -> Result<Vec<FolderEntry>, St
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Sem Arc aqui, o .manage() cuida do compartilhamento
     tauri::Builder::default()
+        .manage(DialogState::default()) // <- registra o estado global
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
-
-            // Esconde ao iniciar
             window.hide()?;
 
             let show = MenuItem::with_id(app, "show", "Abrir", true, None::<&str>)?;
-
             let quit = MenuItem::with_id(app, "quit", "Sair", true, None::<&str>)?;
-
             let menu = Menu::with_items(app, &[&show, &quit])?;
 
             TrayIconBuilder::new()
@@ -87,35 +87,33 @@ pub fn run() {
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "show" => {
                         let window = app.get_webview_window("main").unwrap();
-
                         window.show().unwrap();
                         window.set_focus().unwrap();
                     }
-
                     "quit" => {
                         app.exit(0);
                     }
-
                     _ => {}
                 })
                 .build(app)?;
 
             let monitor = window.current_monitor()?.unwrap();
-
             let monitor_size = monitor.size();
-
             let window_size = window.outer_size()?;
-
             let x = monitor_size.width as i32 - window_size.width as i32 - 20;
             let y = monitor_size.height as i32 - window_size.height as i32 - 60;
-
             window.set_position(PhysicalPosition::new(x, y))?;
 
             let event_window = window.clone();
+            let app_handle = app.handle().clone(); // <- para acessar o estado
 
             window.on_window_event(move |event| {
                 if let tauri::WindowEvent::Focused(false) = event {
-                    event_window.hide().unwrap();
+                    let state = app_handle.state::<DialogState>();
+                    let dialog_aberto = *state.0.lock().unwrap();
+                    if !dialog_aberto {
+                        event_window.hide().unwrap();
+                    }
                 }
             });
 
@@ -125,7 +123,6 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            greet,
             select_workspace,
             list_workspace_folders
         ])
