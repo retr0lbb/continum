@@ -38,7 +38,7 @@ export function InitialPage() {
                                 <ProjectLabel 
                                   name={repo.name} 
                                   lastUpdate={repo.last_opened ?? ""} 
-                                  onClick={navigateToScreen} 
+                                  onClick={() => initProject(repo.path)} 
                                   isSelected      
                                 />
                                 
