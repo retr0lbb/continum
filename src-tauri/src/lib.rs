@@ -19,6 +19,9 @@ pub fn run() {
             let window = app.get_webview_window("main").unwrap();
             window.hide()?;
 
+            #[cfg(debug_assertions)] // <- só abre em desenvolvimento, não em produção
+            window.open_devtools();
+
             let show = MenuItem::with_id(app, "show", "Abrir", true, None::<&str>)?;
             let quit = MenuItem::with_id(app, "quit", "Sair", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&show, &quit])?;
@@ -65,8 +68,11 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::create_ws::select_workspace,
-            commands::folders::list_workspace_folders,
-            commands::app_config::get_last_workspace
+            commands::load_workspace::load_workspace,
+            commands::load_workspace::get_repositories,
+            commands::app_config::get_last_workspace,
+            commands::init_project::init_project,
+            commands::init_project::open_project,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

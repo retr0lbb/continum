@@ -17,18 +17,19 @@ export function useWorkspace() {
 
     // Ao montar, tenta carregar o último workspace
     useEffect(() => {
-        async function loadLast() {
+    async function loadLast() {
             try {
                 const lastPath = await invoke<string | null>("get_last_workspace");
+                console.log("lastPath:", lastPath);
+            
                 if (lastPath) {
-                    // Já temos o path, carrega o workspace.json dele
-                    const config = await invoke<WorkspaceConfig>("load_workspace", {
-                        path: lastPath
-                    });
+                    const config = await invoke<WorkspaceConfig>("load_workspace", { path: lastPath });
+                    console.log("config:", config);
                     setWorkspace(config);
                 }
             } catch (error) {
-                console.error("Erro ao carregar último workspace:", error);
+                // Mostra o erro completo, não só a mensagem
+                console.error("Erro detalhado:", JSON.stringify(error));
             } finally {
                 setLoading(false);
             }

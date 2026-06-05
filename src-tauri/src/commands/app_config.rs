@@ -39,5 +39,11 @@ pub fn save_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), Str
 
 #[tauri::command]
 pub fn get_last_workspace(app: tauri::AppHandle) -> Option<String> {
-    load_config(&app).last_workspace
+
+    let rs = load_config(&app).last_workspace;
+
+    print!("Primeiro");
+    println!("{:#?}", rs);
+
+    rs
 }
