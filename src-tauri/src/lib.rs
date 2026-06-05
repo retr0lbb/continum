@@ -66,6 +66,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::create_ws::select_workspace,
             commands::folders::list_workspace_folders,
+            commands::app_config::get_last_workspace
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

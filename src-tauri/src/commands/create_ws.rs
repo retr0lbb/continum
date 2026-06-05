@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 use crate::DialogState;
+use crate::commands::app_config::{load_config, save_config, AppConfig};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct WorkspaceItem {
@@ -65,6 +66,10 @@ pub async fn select_workspace(app: tauri::AppHandle) -> Result<Option<WorkspaceC
             .map_err(|e| format!("Erro ao criar workspace.json: {}", e))?;
         new_config
     };
+
+    save_config(&app, &AppConfig {
+        last_workspace: Some(folder_path.clone()),
+    })?;
 
     println!("{:#?}", config);
 
