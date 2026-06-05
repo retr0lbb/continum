@@ -6,7 +6,8 @@ import { ProjectLabel } from "../../components/project-label";
 export function InitialPage() {
     const navigate = useNavigate();
     const {workspace, selectWorkspace, initProject, loading, openProject, repos} = useWorkspace()
-    function navigateToScreen() {
+    
+    function handleProjectNavigate(name: string) {
         navigate("/project");
     }
 
