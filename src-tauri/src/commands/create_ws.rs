@@ -9,12 +9,12 @@ use crate::DialogState;
 pub struct WorkspaceItem {
     pub name: String,
     pub path: String,
-    pub num_tasks: usize,
-    pub last_session: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct WorkspaceConfig {
+    #[serde(default)]
+    pub path: String,
     pub items: Vec<WorkspaceItem>,
 }
 
@@ -50,17 +50,23 @@ pub async fn select_workspace(app: tauri::AppHandle) -> Result<Option<WorkspaceC
 
     let config = if config_path.exists() {
         let content = fs::read_to_string(&config_path)
-            .map_err(|e| format!("Erro ao ler workspace.json: {}", e))?;
-        serde_json::from_str::<WorkspaceConfig>(&content)
-            .map_err(|e| format!("workspace.json inválido: {}", e))?
+        .map_err(|e| format!("Erro ao ler workspace.json: {}", e))?;
+    
+        let mut parsed = serde_json::from_str::<WorkspaceConfig>(&content)
+        .map_err(|e| format!("workspace.json inválido: {}", e))?;
+    
+        parsed.path = folder_path.clone();
+        parsed
     } else {
-        let new_config = WorkspaceConfig { items: vec![] };
+        let new_config = WorkspaceConfig { path: folder_path.clone(), items: vec![] };
         let json = serde_json::to_string_pretty(&new_config)
             .map_err(|e| e.to_string())?;
         fs::write(&config_path, json)
             .map_err(|e| format!("Erro ao criar workspace.json: {}", e))?;
         new_config
     };
+
+    println!("{:#?}", config);
 
     Ok(Some(config))
 }
