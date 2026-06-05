@@ -31,7 +31,7 @@ pub fn load_workspace(app: tauri::AppHandle, path: String) -> Result<WorkspaceCo
 }
 
 #[tauri::command]
-pub async fn get_repositories(ws_path: String) -> Result<Vec<ProjectInfo>, String>{
+pub async fn get_repositories(_app: tauri::AppHandle, ws_path: String) -> Result<Vec<ProjectInfo>, String>{
     let entries: fs::ReadDir = fs::read_dir(&ws_path)
         .map_err(|e| format!("Erro ao ler workspace: {}", e))?;
 

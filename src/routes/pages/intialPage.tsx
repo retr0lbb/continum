@@ -1,11 +1,11 @@
 import { WorkspaceButton } from "../../components/workspace-button";
 import { useNavigate } from "react-router";
-import { useWorkspace } from "../../hooks/useGetWorkspace";
+import { useWorkspace } from "../../hooks/useWorkspaces";
+import { ProjectLabel } from "../../components/project-label";
 
 export function InitialPage() {
     const navigate = useNavigate();
-    const { loading, selectWorkspace, workspace } = useWorkspace()
-
+    const {workspace, selectWorkspace, initProject, loading, openProject, repos} = useWorkspace()
     function navigateToScreen() {
         navigate("/project");
     }
@@ -33,7 +33,17 @@ export function InitialPage() {
                     <div className="w-full h-0.5 rounded-full bg-main-text/10" />
 
                     <div className="flex flex-1 flex-wrap gap-6 items-start">
-                        {/* Some let mut */}
+                        {repos.map(repo => {
+                            return(
+                                <ProjectLabel 
+                                  name={repo.name} 
+                                  lastUpdate={repo.last_opened ?? ""} 
+                                  onClick={navigateToScreen} 
+                                  isSelected      
+                                />
+                                
+                            )
+                        })}
                     </div>
                 </>
             ) 
