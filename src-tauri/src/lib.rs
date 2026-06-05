@@ -6,7 +6,10 @@ use tauri::{
 };
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
+use crate::setup::move_window::position_window_bottom_right;
+
 pub mod commands;
+pub mod setup;
 
 #[derive(Default)]
 pub struct DialogState(Mutex<bool>);
@@ -22,7 +25,6 @@ pub fn run() {
         .manage(TogglingState::default())
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
-            window.hide()?;
 
             #[cfg(debug_assertions)] // <- só abre em desenvolvimento, não em produção
             window.open_devtools();
@@ -40,18 +42,16 @@ pub fn run() {
                         window.set_focus().unwrap();
                     }
                     "quit" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.close();
+                        }
                         app.exit(0);
                     }
                     _ => {}
                 })
                 .build(app)?;
 
-            let monitor = window.current_monitor()?.unwrap();
-            let monitor_size = monitor.size();
-            let window_size = window.outer_size()?;
-            let x = monitor_size.width as i32 - window_size.width as i32 - 20;
-            let y = monitor_size.height as i32 - window_size.height as i32 - 60;
-            window.set_position(PhysicalPosition::new(x, y))?;
+            position_window_bottom_right(&window)?;
 
             let event_window = window.clone();
             let app_handle = app.handle().clone(); // <- para acessar o estado
