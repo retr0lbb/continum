@@ -6,10 +6,11 @@ use tauri::{
 };
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
-use crate::setup::move_window::position_window_bottom_right;
+use crate::{setup::move_window::position_window_bottom_right, utils::shortcut};
 
 pub mod commands;
 pub mod setup;
+pub mod utils;
 
 #[derive(Default)]
 pub struct DialogState(Mutex<bool>);
@@ -71,15 +72,8 @@ pub fn run() {
                 }
             });
 
-            let shortcut: Shortcut = "Ctrl+Shift+O".parse().unwrap();
-            let app_handle_shortcut = app.handle().clone();
 
-            app.global_shortcut().on_shortcut(shortcut, move |app, _shortcut, event| {
-                // Ignora keyup, só processa keydown
-                if event.state() != ShortcutState::Pressed {
-                    return;
-                }
-
+            let _ = shortcut::ShortcutBuilder::new(app).add("Ctrl+Shift+O", |app| {
                 if let Some(window) = app.get_webview_window("main") {
                     if window.is_visible().unwrap_or(false) {
                         window.hide().unwrap();
@@ -88,7 +82,8 @@ pub fn run() {
                         window.set_focus().unwrap();
                     }
                 }
-            })?;
+            }).register().map_err(|e| e.to_string());
+
 
             Ok(())
         })
