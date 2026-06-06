@@ -26,7 +26,7 @@ pub fn run() {
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
 
-            #[cfg(debug_assertions)] // <- só abre em desenvolvimento, não em produção
+            #[cfg(debug_assertions)]
             window.open_devtools();
 
             let show = MenuItem::with_id(app, "show", "Abrir", true, None::<&str>)?;
