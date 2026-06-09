@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Project } from "../hooks/useWorkspaces";
+import { Project } from "../types/project.type";
 
 interface ProjectStore {
   project: Project | null;

@@ -98,6 +98,10 @@ pub fn run() {
             commands::app_config::get_last_workspace,
             commands::init_project::init_project,
             commands::init_project::open_project,
+            commands::sessions::open_ws_session,
+            commands::sessions::close_ws_session,
+            commands::sessions::open_project_session,
+            commands::sessions::close_project_session,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

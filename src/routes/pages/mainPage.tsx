@@ -7,6 +7,8 @@ import { NotesTab } from "../../components/tabs/notes-tab";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useProject } from "../../stores/project.store";
+import { useSessionStore } from "../../stores/session.store";
+import { useSessions } from "../../hooks/useSessions";
 import { ActiveCounter } from "../../components/active-conter";
 
 
@@ -15,6 +17,9 @@ export function MainPage() {
     const [tab, setTab] = useState<"task" | "summary" | "notes">("summary")
     const {project, setProject} = useProject()
     const navigator = useNavigate();
+    const { closeProjectSession } = useSessions();
+    const activeProjectPath = useSessionStore((s) => s.activeProjectPath);
+    const clearProjectSession = useSessionStore((s) => s.clearProjectSession);
 
     if(!project){
         console.log("Projeto nao carregado voltando a estaca 00")
@@ -22,7 +27,11 @@ export function MainPage() {
         return
     }
 
-    function returnToMain() {
+    async function returnToMain() {
+        if (activeProjectPath) {
+            await closeProjectSession(activeProjectPath);
+            clearProjectSession();
+        }
         setProject(null)
         navigator("/");
     }

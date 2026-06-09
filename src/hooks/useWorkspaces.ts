@@ -1,8 +1,9 @@
-// useWorkspace.ts
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { WorkspaceConfig } from "./useGetWorkspace";
 import { Project, ProjectInfo } from "../types/project.type";
+import { useSessions } from "./useSessions";
+import { useSessionStore } from "../stores/session.store";
 
 
 export function useWorkspace() {
@@ -10,11 +11,28 @@ export function useWorkspace() {
     const [repos, setRepos] = useState<ProjectInfo[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const { openWorkspaceSession, closeWorkspaceSession, openProjectSession} = useSessions();
+    const activeWorkspacePath = useSessionStore((s) => s.activeWorkspacePath);
+    const setActiveWorkspacePath = useSessionStore((s) => s.setActiveWorkspacePath);
+    const setWorkspaceSessionStart = useSessionStore((s) => s.setWorkspaceSessionStart);
+    const setActiveProjectPath = useSessionStore((s) => s.setActiveProjectPath);
+    const setProjectSessionStart = useSessionStore((s) => s.setProjectSessionStart);
+
+    async function handleWorkspaceOpened(config: WorkspaceConfig) {
+        if (activeWorkspacePath && activeWorkspacePath !== config.path) {
+            await closeWorkspaceSession(activeWorkspacePath);
+        }
+        await openWorkspaceSession(config.path);
+        setActiveWorkspacePath(config.path);
+        setWorkspaceSessionStart(new Date().toISOString());
+    }
+
     async function loadWorkspace(path: string) {
         const config = await invoke<WorkspaceConfig>("load_workspace", { path });
         const repositories = await invoke<ProjectInfo[]>("get_repositories", { wsPath: path });
         setWorkspace(config);
         setRepos(repositories);
+        await handleWorkspaceOpened(config);
     }
 
     useEffect(() => {
@@ -39,6 +57,7 @@ export function useWorkspace() {
             const repositories = await invoke<ProjectInfo[]>("get_repositories", { wsPath: config.path });
             setWorkspace(config);
             setRepos(repositories);
+            await handleWorkspaceOpened(config);
         } catch (error) {
             console.error("Erro:", JSON.stringify(error));
         } finally {
@@ -55,11 +74,21 @@ export function useWorkspace() {
 
         console.log("DATA DO HOOK", data)
 
+        await openProjectSession(data.path);
+        setActiveProjectPath(data.path);
+        setProjectSessionStart(new Date().toISOString());
+
         return data
     }
 
     async function openProject(path: string): Promise<Project> {
-        return await invoke<Project>("open_project", { path });
+        const data = await invoke<Project>("open_project", { path });
+
+        await openProjectSession(data.path);
+        setActiveProjectPath(data.path);
+        setProjectSessionStart(new Date().toISOString());
+
+        return data;
     }
 
     return { workspace, repos, loading, selectWorkspace, initProject, openProject };
