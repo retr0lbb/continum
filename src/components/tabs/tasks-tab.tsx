@@ -1,21 +1,24 @@
 import { tv } from "tailwind-variants"
 import { useTaskSelection } from "../../hooks/useTaskSelection"
+import { useProjectTasks } from "../../hooks/useProjectTasks"
+import { useProject } from "../../stores/project.store"
+import { TaskStatus } from "../../types/tasks.type"
 
 const columns = [
     {
-        status: "todo" as const,
+        status: TaskStatus.todo,
         label: "Todo",
-        tasks: ["Implementar Api no Front", "Escrever Dockerfile"]
+        tasks: []
     },
     {
-        status: "doing" as const,
+        status: TaskStatus.doing,
         label: "Doing",
-        tasks: ["Resolver Bug da função 'Calcular juros'"]
+        tasks: []
     },
     {
-        status: "done" as const,
+        status: TaskStatus.done,
         label: "Done",
-        tasks: ["Implementar paginação nativa", "Adicionar coluna 'created_at'"]
+        tasks: []
     },
 ]
 
@@ -24,7 +27,27 @@ interface TasksTabProps {
 }
 
 export function TasksTab(props: TasksTabProps) {
-    const { handleKeyDown, isSelected, containerRef } = useTaskSelection(columns)
+    const {project} = useProject()
+    
+    if(!project){
+        return
+    }
+    
+    const {isLoading, tasks} = useProjectTasks({projectPath: project.path})
+    
+    const formattedColumuns = columns.map(col => {
+        return {
+            status: col.status,
+            label: col.label,
+            tasks: tasks.filter((a) => a.status == col.status)
+        }
+    })
+    const { handleKeyDown, isSelected, containerRef } = useTaskSelection(formattedColumuns)
+
+    if(isLoading){
+        return <p className="text-zinc-200">Loading...</p>
+    }
+
 
     return (
         <div
@@ -40,7 +63,7 @@ export function TasksTab(props: TasksTabProps) {
             </div>
 
             <div className="flex flex-1 gap-2 min-h-0">
-                {columns.map((col, colIndex) => (
+                {formattedColumuns.map((col, colIndex) => (
                     <div
                         key={col.status}
                         className="flex flex-col w-full min-h-0 overflow-y-auto scrollbar-none gap-2"
@@ -49,7 +72,7 @@ export function TasksTab(props: TasksTabProps) {
                             <TaskCard
                                 key={`${col.status}-${rowIndex}`}
                                 status={col.status}
-                                text={task}
+                                text={task.title}
                                 selected={isSelected(colIndex, rowIndex)}
                             />
                         ))}
@@ -62,7 +85,7 @@ export function TasksTab(props: TasksTabProps) {
 
 interface TaskCardProps {
     text: string,
-    status: "todo" | "doing" | "done",
+    status: TaskStatus,
     selected?: boolean,
     className?: string
 }

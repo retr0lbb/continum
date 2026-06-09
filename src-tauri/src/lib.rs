@@ -102,6 +102,8 @@ pub fn run() {
             commands::sessions::close_ws_session,
             commands::sessions::open_project_session,
             commands::sessions::close_project_session,
+            commands::tasks::save_project_tasks,
+            commands::tasks::read_project_tasks
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
