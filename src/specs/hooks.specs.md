@@ -103,3 +103,150 @@ const totalTasks = useMemo(
 | `useCallback` with primitive deps | Values in deps are primitives or stable refs | `isSelected` depending on `selectedCol`, `selectedRow` |
 | `useMemo` | Expensive derived calculations | Filtering, sorting, mapping large arrays |
 | Inline in render | Trivial calculations, static JSX | — |
+
+---
+
+## 11. Grid Navigation Hook — `useGridNavigation`
+
+**Arquivo:** `src/hooks/useGridNavigation.ts`
+
+Hook genérico para navegação por teclado em grids de 1 ou 2 dimensões.
+
+### Assinatura
+
+```typescript
+interface UseGridNavigationConfig {
+  colCount: number;
+  rowCount: number | ((col: number) => number);
+  onActivate?: (col: number, row: number) => void;
+}
+
+export function useGridNavigation(
+  config: UseGridNavigationConfig
+): {
+  selectedCol: number | null;
+  selectedRow: number | null;
+  handleKeyDown: (e: React.KeyboardEvent) => void;
+  isSelected: (col: number, row: number) => boolean;
+  containerRef: RefObject<HTMLDivElement | null>;
+}
+```
+
+### Parâmetros
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `config.colCount` | `number` | Número de colunas do grid |
+| `config.rowCount` | `number \| ((col) => number)` | Número de linhas (constante ou por coluna) |
+| `config.onActivate` | `(col, row) => void` | Callback chamado ao pressionar Enter |
+
+### Retorno
+
+| Propriedade | Descrição |
+|---|---|
+| `selectedCol` | Coluna atualmente selecionada (ou `null`) |
+| `selectedRow` | Linha atualmente selecionada (ou `null`) |
+| `handleKeyDown` | Handler de teclado para espalhar no container |
+| `isSelected(col, row)` | Testa se uma célula está selecionada (para uso em `data-selected` e `isSelected` prop) |
+| `containerRef` | Ref para espalhar no container (usado no scroll-into-view) |
+
+### Comportamento do Teclado
+
+| Tecla | Ação |
+|-------|------|
+| `ArrowUp/Down` | Navega verticalmente, respeitando os limites da coluna |
+| `ArrowLeft/Right` | Navega horizontalmente, com clamp da linha para os limites da coluna alvo |
+| `Enter` | Chama `onActivate(col, row)` |
+| Qualquer tecla quando `null,null` | Inicializa seleção em `(0, 0)` |
+
+### Exemplo (1D — lista de projetos)
+
+```typescript
+const { handleKeyDown, isSelected, containerRef } = useGridNavigation({
+  colCount: 1,
+  rowCount: repos.length,
+  onActivate: (_col, row) => openProject(repos[row].path),
+});
+```
+
+### Exemplo (2D — grid de tarefas)
+
+```typescript
+const { handleKeyDown, isSelected, containerRef } = useGridNavigation({
+  colCount: columns.length,
+  rowCount: (col) => columns[col].tasks.length,
+});
+```
+
+---
+
+## 12. Task Selection Hook — `useTaskSelection`
+
+**Arquivo:** `src/hooks/useTaskSelection.ts`
+
+Wrapper específico para o grid de tarefas. Delega internamente para `useGridNavigation`.
+
+```typescript
+interface UseTaskSelectionColumn {
+  tasks: unknown[];
+}
+
+export function useTaskSelection(
+  columns: UseTaskSelectionColumn[]
+): // retorno idêntico ao de useGridNavigation
+{
+  selectedCol: number | null;
+  selectedRow: number | null;
+  handleKeyDown: (e: React.KeyboardEvent) => void;
+  isSelected: (col: number, row: number) => boolean;
+  containerRef: RefObject<HTMLDivElement | null>;
+}
+```
+
+---
+
+## 13. Project Selection Hook — `useProjectSelection`
+
+**Arquivo:** `src/hooks/useProjectSelection.ts`
+
+Hook específico para a lista de projetos na `InitialPage`. Delega internamente para `useGridNavigation` com `colCount: 1`.
+
+```typescript
+export function useProjectSelection(
+  repos: ProjectInfo[],
+  onActivate: (repo: ProjectInfo, index: number) => void
+): {
+  selectedCol: number | null;
+  selectedRow: number | null;
+  handleKeyDown: (e: React.KeyboardEvent) => void;
+  isSelected: (col: number, row: number) => boolean;
+  containerRef: RefObject<HTMLDivElement | null>;
+  selectedRepoIndex: number | null;
+}
+```
+
+### Como usar na página
+
+```typescript
+function InitialPage() {
+  const { repos } = useWorkspace();
+  const { handleKeyDown, isSelected, containerRef } = useProjectSelection(
+    repos,
+    (repo) => handleOpenProject(repo.path)
+  );
+
+  return (
+    <div ref={containerRef} onKeyDown={handleKeyDown} tabIndex={0}>
+      {repos.map((repo, index) => (
+        <div key={repo.path} data-selected={isSelected(0, index) ? "true" : undefined}>
+          <ProjectLabel
+            name={repo.name}
+            onClick={() => handleOpenProject(repo.path)}
+            isSelected={isSelected(0, index)}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+```

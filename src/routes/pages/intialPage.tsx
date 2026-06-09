@@ -1,6 +1,7 @@
 import { WorkspaceButton } from "../../components/workspace-button";
 import { useNavigate } from "react-router";
 import { useWorkspace } from "../../hooks/useWorkspaces";
+import { useProjectSelection } from "../../hooks/useProjectSelection";
 import { ProjectLabel } from "../../components/project-label";
 import { useProject } from "../../stores/project.store";
 import { Project } from "../../types/project.type";
@@ -9,12 +10,6 @@ export function InitialPage() {
     const navigate = useNavigate();
     const {workspace, selectWorkspace, initProject, loading, openProject, repos} = useWorkspace()
     const {project, setProject} = useProject()
-
-
-    if(project !== null){
-        navigate("/project")
-        return
-    }
 
     async function handleOpenProject(path: string) {
     try {
@@ -32,6 +27,16 @@ export function InitialPage() {
         } catch (error) {
             console.error("Erro ao abrir projeto:", error);
         }
+    }
+
+    const { handleKeyDown, isSelected, containerRef } = useProjectSelection(
+        repos,
+        (repo) => handleOpenProject(repo.path)
+    );
+
+    if(project !== null){
+        navigate("/project")
+        return
     }
 
 
@@ -56,16 +61,22 @@ export function InitialPage() {
 
                     <div className="w-full h-0.5 rounded-full bg-main-text/10" />
 
-                    <div className="flex flex-1 flex-wrap gap-6 items-start">
-                        {repos.map(repo => {
+                    <div
+                        ref={containerRef}
+                        onKeyDown={handleKeyDown}
+                        tabIndex={0}
+                        className="flex flex-1 flex-wrap gap-6 items-start outline-none"
+                    >
+                        {repos.map((repo, index) => {
                             return(
-                                <ProjectLabel 
-                                  name={repo.name} 
-                                  lastUpdate={repo.last_opened ?? ""} 
-                                  onClick={() => handleOpenProject(repo.path)} 
-                                  isSelected      
-                                />
-                                
+                                <div key={repo.path} data-selected={isSelected(0, index) ? "true" : undefined}>
+                                    <ProjectLabel 
+                                      name={repo.name} 
+                                      lastUpdate={repo.last_opened ?? ""} 
+                                      onClick={() => handleOpenProject(repo.path)} 
+                                      isSelected={isSelected(0, index)}      
+                                    />
+                                </div>
                             )
                         })}
                     </div>
