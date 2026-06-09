@@ -10,6 +10,7 @@ use crate::{setup::move_window::position_window_bottom_right, utils::shortcut};
 pub mod commands;
 pub mod setup;
 pub mod utils;
+pub mod types;
 
 #[derive(Default)]
 pub struct DialogState(Mutex<bool>);
