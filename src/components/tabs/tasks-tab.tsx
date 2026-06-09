@@ -3,24 +3,7 @@ import { useTaskSelection } from "../../hooks/useTaskSelection"
 import { useProjectTasks } from "../../hooks/useProjectTasks"
 import { useProject } from "../../stores/project.store"
 import { TaskStatus } from "../../types/tasks.type"
-
-const columns = [
-    {
-        status: TaskStatus.todo,
-        label: "Todo",
-        tasks: []
-    },
-    {
-        status: TaskStatus.doing,
-        label: "Doing",
-        tasks: []
-    },
-    {
-        status: TaskStatus.done,
-        label: "Done",
-        tasks: []
-    },
-]
+import { TaskCard } from "../task-card"
 
 interface TasksTabProps {
     isVisible?: boolean
@@ -33,21 +16,7 @@ export function TasksTab(props: TasksTabProps) {
         return
     }
     
-    const {isLoading, tasks} = useProjectTasks({projectPath: project.path})
-    
-    const formattedColumuns = columns.map(col => {
-
-        return {
-            status: col.status,
-            label: col.label,
-            tasks: tasks.filter((a) => a.status == col.status)
-        }
-    })
-
-    const columnsWithCreate = formattedColumuns.map((col, index) => ({
-        ...col,
-        tasks: index === 0 ? [...col.tasks, { title: "Nova Task", status: "create" }] : col.tasks
-    }))
+    const { isLoading, columns, columnsWithCreate, createTask } = useProjectTasks({projectPath: project.path})
     const { handleKeyDown, isSelected, containerRef } = useTaskSelection(columnsWithCreate)
 
     if(isLoading){
@@ -69,7 +38,7 @@ export function TasksTab(props: TasksTabProps) {
             </div>
 
             <div className="flex flex-1 gap-2 min-h-0">
-                {formattedColumuns.map((col, colIndex) => (
+                {columnsWithCreate.map((col, colIndex) => (
                     <div
                         key={col.status}
                         className="flex flex-col w-full min-h-0 overflow-y-auto scrollbar-none gap-2"
@@ -79,7 +48,7 @@ export function TasksTab(props: TasksTabProps) {
                             return(
                                 <TaskCard
                                     key={`${col.status}-${rowIndex}`}
-                                    status={col.status as TaskStatus | "create"}
+                                    status={task.status as TaskStatus | "create"}
                                     text={task.title}
                                     selected={isSelected(colIndex, rowIndex)}
                                 />
@@ -89,46 +58,5 @@ export function TasksTab(props: TasksTabProps) {
                 ))}
             </div>
         </div>
-    )
-}
-
-interface TaskCardProps {
-    text: string,
-    status: TaskStatus | "create",
-    selected?: boolean,
-    className?: string
-}
-const taskCardVariants = tv({
-    base: `p-2.5 flex items-center justify-center overflow-hidden 
-    w-full rounded-sm text-center cursor-pointer font-medium select-none shrink-0`,
-    variants: {
-        status: {
-            todo: "border border-muted-text text-muted-text",
-            doing: "border border-main-text text-main-text",
-            done: "text-background-main select-none border bg-accent border-accent",
-            create: "border border-dashed border-zinc-800 hover:border-zinc-500 text-muted-text"
-        },
-        selected: {
-            true: "text-accent border-accent transition-all"
-        }
-    },
-    compoundVariants: [
-        {
-            selected: true,
-            status: "done",
-            className: "bg-background-main text-accent border-accent transition-all"
-        }
-    ]
-})
-
-
-export function TaskCard(props: TaskCardProps) {
-    return (
-        <p
-            className={taskCardVariants({ className: props.className, status: props.status, selected: props.selected })}
-            data-selected={props.selected ? "true" : undefined}
-        >
-            {props.text}
-        </p>
     )
 }
