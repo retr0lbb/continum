@@ -1,6 +1,6 @@
 import { WorkspaceButton } from "../../components/workspace-button";
 import { useNavigate } from "react-router";
-import { useWorkspace } from "../../hooks/useWorkspaces";
+import { Project, useWorkspace } from "../../hooks/useWorkspaces";
 import { ProjectLabel } from "../../components/project-label";
 import { useProject } from "../../stores/project.store";
 
@@ -15,27 +15,21 @@ export function InitialPage() {
         return
     }
 
-    async function handleOpenProject(path: string){
+    async function handleOpenProject(path: string) {
+    try {
+        let data: Project;
+
         try {
-            let data = await openProject(path)
+            data = await openProject(path);
+        } catch {
+            // Se falhou, tenta inicializar
+            data = await initProject(path);
+        }
 
-            if(!data){
-                console.log("projeto nao inicializado")
-                data = await initProject(path)
-            }
-
-            if(!data){
-                throw new Error("Could't init project ")
-            }
-
-            setProject(data)
-
-            navigate("/project")
-
-            return;
-
+        setProject(data);
+        navigate("/project");
         } catch (error) {
-            console.log(error)
+            console.error("Erro ao abrir projeto:", error);
         }
     }
 

@@ -7,6 +7,7 @@ import { NotesTab } from "../../components/tabs/notes-tab";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useProject } from "../../stores/project.store";
+import { ActiveCounter } from "../../components/active-conter";
 
 
 export function MainPage() {
@@ -18,6 +19,7 @@ export function MainPage() {
     if(!project){
         console.log("Projeto nao carregado voltando a estaca 00")
         returnToMain()
+        return
     }
 
     function returnToMain() {
@@ -25,7 +27,10 @@ export function MainPage() {
         navigator("/");
     }
 
-    console.log(project)
+    if(!project){
+        return <p> No project here </p>
+    }
+
 
     return <main className="w-screen h-screen bg-background-main flex flex-col p-3 gap-2">
         <div className="flex items-center justify-between">
@@ -35,7 +40,7 @@ export function MainPage() {
             </div>
 
             <div className="flex flex-col items-end gap-1">
-                <p className="text-main-text">Ativo Por: <span className="text-accent text-md">01:46:15</span></p>
+                <ActiveCounter last_time={project.last_opened} />
                 <WeeklySquares />
             </div>
         </div>

@@ -65,17 +65,19 @@ export function useWorkspace() {
     }
 
     async function initProject(path: string): Promise<Project> {
-        const data = await invoke("init_project", { path });
+        const data = await invoke<Project>("init_project", { path });
         if (workspace) {
             const repositories = await invoke<ProjectInfo[]>("get_repositories", { wsPath: workspace.path });
             setRepos(repositories);
         }
 
-        return data as Project
+        console.log("DATA DO HOOK", data)
+
+        return data
     }
 
     async function openProject(path: string): Promise<Project> {
-        return await invoke("open_project", { path });
+        return await invoke<Project>("open_project", { path });
     }
 
     return { workspace, repos, loading, selectWorkspace, initProject, openProject };
