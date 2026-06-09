@@ -30,14 +30,37 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
         }
     }, [projectPath]);
 
+    const moveTask = useCallback(async (task: Task, targetStatus: TaskStatus) => {
+      if (task.status === targetStatus) return;
+
+      const sourceIndex = tasks.findIndex(t => t.title === task.title && t.status === task.status);
+      if (sourceIndex === -1) return;
+
+      const withoutTask = tasks.filter((_, i) => i !== sourceIndex);
+      const updatedTask: Task = { ...task, status: targetStatus };
+
+      // Acha o índice do primeiro item da coluna alvo e insere antes dele (topo)
+      const firstOfTarget = withoutTask.findIndex(t => t.status === targetStatus);
+      const updated = firstOfTarget === -1
+          ? [...withoutTask, updatedTask]
+          : [...withoutTask.slice(0, firstOfTarget), updatedTask, ...withoutTask.slice(firstOfTarget)];
+
+      setTasks(updated);
+      try {
+          await invoke("save_project_tasks", { projectPath, tasks: updated });
+      } catch (err) {
+          setTasks(tasks);
+          setError(String(err));
+      }
+    }, [projectPath, tasks]);
+
     const createTask = useCallback(async (title: string) => {
         const newTask: Task = { title, status: TaskStatus.todo };
         const updated = [...tasks, newTask];
         setTasks(updated);
         try {
-            await invoke("save_tasks", { projectPath, tasks: updated });
+            await invoke("save_project_tasks", { projectPath, tasks: updated });
         } catch (err) {
-            // Reverte se falhar
             setTasks(tasks);
             setError(String(err));
         }
@@ -73,5 +96,5 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
         fetchTasks();
     }, [fetchTasks]);
 
-    return { tasks, columns, columnsWithCreate, isLoading, error, fetchTasks, createTask };
+    return { tasks, columns, columnsWithCreate, isLoading, error, fetchTasks, createTask, moveTask };
 }

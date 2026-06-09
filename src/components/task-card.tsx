@@ -1,12 +1,16 @@
-import { tv } from "tailwind-variants"
-import { TaskStatus } from "../types/tasks.type"
+import { tv } from "tailwind-variants";
+import { TaskStatus } from "../types/tasks.type";
 
+// task-card.tsx
 interface TaskCardProps {
-    text: string,
-    status: TaskStatus | "create",
-    selected?: boolean,
-    className?: string
+    text: string;
+    status: TaskStatus | "create";
+    selected?: boolean;
+    picked?: boolean;
+    className?: string;
+    onActivate?: () => void;
 }
+
 const taskCardVariants = tv({
     base: `p-2.5 flex items-center justify-center overflow-hidden 
     w-full rounded-sm text-center cursor-pointer font-medium select-none shrink-0`,
@@ -19,6 +23,9 @@ const taskCardVariants = tv({
         },
         selected: {
             true: "text-accent border-accent transition-all"
+        },
+        picked: {
+            true: "opacity-50 scale-95 transition-all" // <- feedback visual de "segurando"
         }
     },
     compoundVariants: [
@@ -26,17 +33,21 @@ const taskCardVariants = tv({
             selected: true,
             status: "done",
             className: "bg-background-main text-accent border-accent transition-all"
-        },
-        {selected: true, status: "create", className: "border-green-500 border-dashed"}
+        }
     ]
 })
-
 
 export function TaskCard(props: TaskCardProps) {
     return (
         <p
-            className={taskCardVariants({ className: props.className, status: props.status, selected: props.selected })}
+            className={taskCardVariants({
+                className: props.className,
+                status: props.status,
+                selected: props.selected,
+                picked: props.picked
+            })}
             data-selected={props.selected ? "true" : undefined}
+            onClick={props.onActivate}
         >
             {props.text}
         </p>
