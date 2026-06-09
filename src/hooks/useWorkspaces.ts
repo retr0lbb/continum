@@ -14,6 +14,15 @@ export interface ProjectInfo {
     last_opened: string | null;
 }
 
+
+export interface Project {
+    name: string,
+    path: string,
+    description: string,
+    created_at: string,
+    last_opened: string,
+}
+
 export function useWorkspace() {
     const [workspace, setWorkspace] = useState<WorkspaceConfig | null>(null);
     const [repos, setRepos] = useState<ProjectInfo[]>([]);
@@ -26,7 +35,6 @@ export function useWorkspace() {
         setRepos(repositories);
     }
 
-    // Tenta carregar o último workspace ao iniciar
     useEffect(() => {
         async function init() {
             try {
@@ -56,16 +64,17 @@ export function useWorkspace() {
         }
     }
 
-    async function initProject(path: string) {
-        await invoke("init_project", { path });
-        // Reescaneia os repos após inicializar
+    async function initProject(path: string): Promise<Project> {
+        const data = await invoke("init_project", { path });
         if (workspace) {
             const repositories = await invoke<ProjectInfo[]>("get_repositories", { wsPath: workspace.path });
             setRepos(repositories);
         }
+
+        return data as Project
     }
 
-    async function openProject(path: string) {
+    async function openProject(path: string): Promise<Project> {
         return await invoke("open_project", { path });
     }
 

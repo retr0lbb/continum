@@ -2,13 +2,41 @@ import { WorkspaceButton } from "../../components/workspace-button";
 import { useNavigate } from "react-router";
 import { useWorkspace } from "../../hooks/useWorkspaces";
 import { ProjectLabel } from "../../components/project-label";
+import { useProject } from "../../stores/project.store";
 
 export function InitialPage() {
     const navigate = useNavigate();
     const {workspace, selectWorkspace, initProject, loading, openProject, repos} = useWorkspace()
-    
-    function handleProjectNavigate(name: string) {
-        navigate("/project");
+    const {project, setProject} = useProject()
+
+
+    if(project !== null){
+        navigate("/project")
+        return
+    }
+
+    async function handleOpenProject(path: string){
+        try {
+            let data = await openProject(path)
+
+            if(!data){
+                console.log("projeto nao inicializado")
+                data = await initProject(path)
+            }
+
+            if(!data){
+                throw new Error("Could't init project ")
+            }
+
+            setProject(data)
+
+            navigate("/project")
+
+            return;
+
+        } catch (error) {
+            console.log(error)
+        }
     }
 
 
@@ -39,7 +67,7 @@ export function InitialPage() {
                                 <ProjectLabel 
                                   name={repo.name} 
                                   lastUpdate={repo.last_opened ?? ""} 
-                                  onClick={() => initProject(repo.path)} 
+                                  onClick={() => handleOpenProject(repo.path)} 
                                   isSelected      
                                 />
                                 
