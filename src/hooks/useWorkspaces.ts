@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { WorkspaceConfig } from "./useGetWorkspace";
+import { WorkspaceConfig } from "../types/workspace.type";
 import { Project, ProjectInfo } from "../types/project.type";
 import { useSessions } from "./useSessions";
 import { useSessionStore } from "../stores/session.store";
