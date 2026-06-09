@@ -1,6 +1,13 @@
 import { tv } from "tailwind-variants"
 import { ChevronRight } from "lucide-react"
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/pt-br";
+
+dayjs.extend(relativeTime);
+dayjs.locale("pt-br");
+
 const textVariant = tv({
     base: "text-main-text text-lg font-medium",
     variants: {
@@ -39,7 +46,7 @@ export function ProjectLabel(props: ProjectLabelProps) {
             </div>
 
             <p className={textVariant({ selected: props.isSelected })}>{props.name}</p>
-            <p className="text-muted-text pl-2">{props.lastUpdate} dias atrás</p>
+            <p className="text-muted-text pl-2">{dayjs(props.lastUpdate).fromNow()} dias atrás</p>
         </div>
     )
 }
