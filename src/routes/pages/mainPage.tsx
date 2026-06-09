@@ -36,7 +36,7 @@ export function MainPage() {
         <div className="flex items-center justify-between">
             <div data-tauri-drag-region onClick={() => returnToMain()} className="flex items-center justify-center gap-1">
                 <ArrowLeft className="size-5 text-main-text" />
-                <h1 className="text-lg text-main-text">Dinheirama</h1>
+                <h1 className="text-lg text-main-text">{project.name}</h1>
             </div>
 
             <div className="flex flex-col items-end gap-1">

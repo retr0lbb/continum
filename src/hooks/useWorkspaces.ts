@@ -1,27 +1,9 @@
 // useWorkspace.ts
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
+import { WorkspaceConfig } from "./useGetWorkspace";
+import { Project, ProjectInfo } from "../types/project.type";
 
-export interface WorkspaceConfig {
-    path: string;
-    last_opened: string;
-}
-
-export interface ProjectInfo {
-    name: string;
-    path: string;
-    initialized: boolean;
-    last_opened: string | null;
-}
-
-
-export interface Project {
-    name: string,
-    path: string,
-    description: string,
-    created_at: string,
-    last_opened: string,
-}
 
 export function useWorkspace() {
     const [workspace, setWorkspace] = useState<WorkspaceConfig | null>(null);

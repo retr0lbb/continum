@@ -42,8 +42,5 @@ pub fn get_last_workspace(app: tauri::AppHandle) -> Option<String> {
 
     let rs = load_config(&app).last_workspace;
 
-    print!("Primeiro");
-    println!("{:#?}", rs);
-
     rs
 }

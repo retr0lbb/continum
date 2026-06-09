@@ -1,8 +1,9 @@
 import { WorkspaceButton } from "../../components/workspace-button";
 import { useNavigate } from "react-router";
-import { Project, useWorkspace } from "../../hooks/useWorkspaces";
+import { useWorkspace } from "../../hooks/useWorkspaces";
 import { ProjectLabel } from "../../components/project-label";
 import { useProject } from "../../stores/project.store";
+import { Project } from "../../types/project.type";
 
 export function InitialPage() {
     const navigate = useNavigate();
