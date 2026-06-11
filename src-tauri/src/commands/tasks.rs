@@ -16,8 +16,8 @@ pub struct Task {
 }
 
 #[tauri::command]
-pub fn read_project_tasks(projectPath: String)-> Result<Vec<Task>, String>{
-    let path = Path::new(&projectPath).join(".continum/tasks.md");
+pub fn read_project_tasks(project_path: String)-> Result<Vec<Task>, String>{
+    let path = Path::new(&project_path).join(".continum/tasks.md");
 
     if !path.exists(){
         return Err("Tasks File not found".to_string());

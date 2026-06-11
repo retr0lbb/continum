@@ -29,7 +29,7 @@ export function TasksTab(props: TasksTabProps) {
             onActivate: (col, row) => {
                 const task = columnsWithCreate[col]?.tasks[row];
                 if(task.status === "create"){
-                    console.log("Hey this task is being created")
+                    createTask("Nova Task")
                 }
             },
             onTaskDelete: (col, row) => {

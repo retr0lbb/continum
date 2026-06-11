@@ -30,6 +30,14 @@ export function useTaskSelection(
       const canPick = opts?.canPickUp?.(col, row) ?? true;
 
       if (!canPick) {
+        if (pickedTask === null) {
+          opts?.onActivate?.(col, row);
+        }
+        return;
+      }
+
+
+      if (!canPick) {
         opts?.onActivate?.(col, row);
         return;
       }
@@ -48,7 +56,8 @@ export function useTaskSelection(
     },
     keyBindings: {
       "shift+e": (col, row) => options?.onTaskDelete(col, row)
-    }
+    },
+    isHovering: () => pickedTask !== null,
   });
 
   const isPickedTask = useCallback(

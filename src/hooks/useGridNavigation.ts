@@ -7,6 +7,7 @@ interface UseGridNavigationConfig {
   rowCount: number | ((col: number) => number);
   onActivate?: (col: number, row: number) => void;
   keyBindings?: Record<string, KeyHandler>
+  isHovering?: () => boolean; // <- adiciona
 }
 
 export function useGridNavigation(config: UseGridNavigationConfig) {
@@ -73,17 +74,25 @@ export function useGridNavigation(config: UseGridNavigationConfig) {
         case "ArrowDown":
           setSelectedRow(Math.min(getRowCount(selectedCol) - 1, selectedRow + 1));
           break;
-        case "ArrowLeft": {
-          const newCol = Math.max(0, selectedCol - 1);
-          setSelectedCol(newCol);
-          setSelectedRow(Math.min(selectedRow, getRowCount(newCol) - 1));
-          break;
-        }
+
         case "ArrowRight": {
-          const newCol = Math.min(colCount - 1, selectedCol + 1);
-          setSelectedCol(newCol);
-          setSelectedRow(Math.min(selectedRow, getRowCount(newCol) - 1));
-          break;
+            const newCol = Math.min(colCount - 1, selectedCol + 1);
+            const isEmpty = getRowCount(newCol) === 0;
+            const isPicking = configRef.current.isHovering?.(); // <- precisamos disso
+            if (isEmpty && !isPicking) break;
+            setSelectedCol(newCol);
+            setSelectedRow(Math.min(selectedRow, Math.max(0, getRowCount(newCol) - 1)));
+            break;
+        }
+
+        case "ArrowLeft": {
+            const newCol = Math.max(0, selectedCol - 1);
+            const isEmpty = getRowCount(newCol) === 0;
+            const isPicking = configRef.current.isHovering?.();
+            if (isEmpty && !isPicking) break;
+            setSelectedCol(newCol);
+            setSelectedRow(Math.min(selectedRow, Math.max(0, getRowCount(newCol) - 1)));
+            break;
         }
         case "Enter":
           configRef.current.onActivate?.(selectedCol, selectedRow);

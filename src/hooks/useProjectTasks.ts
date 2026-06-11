@@ -21,7 +21,7 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
         setIsLoading(true);
         setError(null);
         try {
-            const data = await invoke<Task[]>("read_project_tasks", { projectPath });
+            const data = await invoke<Task[]>("read_project_tasks", { projectPath: projectPath });
             setTasks(data);
         } catch (err) {
             setError(String(err));
