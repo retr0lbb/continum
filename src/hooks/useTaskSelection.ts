@@ -8,6 +8,7 @@ interface UseTaskSelectionColumn {
 interface UseTaskSelectionOptions {
   onMoveTask?: (sourceCol: number, sourceRow: number, targetCol: number) => void;
   canPickUp?: (col: number, row: number) => boolean;
+  onActivate?: (col: number, row: number) => void; // <- adiciona
 }
 
 export function useTaskSelection(
@@ -24,6 +25,13 @@ export function useTaskSelection(
     rowCount: (col) => columns[col].tasks.length,
     onActivate: (col, row) => {
       const opts = optionsRef.current;
+
+      const canPick = opts?.canPickUp?.(col, row) ?? true;
+
+      if (!canPick) {
+        opts?.onActivate?.(col, row);
+        return;
+      }
 
       if (pickedTask === null) {
         const canPick = opts?.canPickUp?.(col, row) ?? true;

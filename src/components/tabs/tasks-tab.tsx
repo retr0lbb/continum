@@ -26,7 +26,13 @@ export function TasksTab(props: TasksTabProps) {
             canPickUp: (col, row) => {
                 const task = columnsWithCreate[col].tasks[row] as any;
                 return task?.status !== "create";
-            }
+            },
+            onActivate: (col, row) => {
+                const task = columnsWithCreate[col]?.tasks[row];
+                if(task.status === "create"){
+                    console.log("Hey this task is being created")
+                }
+            },
         }
     )
 

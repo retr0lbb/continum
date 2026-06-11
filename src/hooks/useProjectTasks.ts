@@ -30,23 +30,37 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
         }
     }, [projectPath]);
 
+    //cria a função passando um callback para evitar re-rendering
     const moveTask = useCallback(async (task: Task, targetStatus: TaskStatus) => {
+        // ve se a task ja esta com o estatus que desejamos, se sim ele cancela a operacao
       if (task.status === targetStatus) return;
 
+      //acha o index da task
       const sourceIndex = tasks.findIndex(t => t.title === task.title && t.status === task.status);
-      if (sourceIndex === -1) return;
 
+      //se o índice nao existe ele volta -1 entao se a task nao existir ele cancela
+      if (sourceIndex === -1) return;
+      
+      //retira a task da lista de tasks
       const withoutTask = tasks.filter((_, i) => i !== sourceIndex);
-      const updatedTask: Task = { ...task, status: targetStatus };
+
+      // muda o status da task para o estatus desejado
+      const updatedTask: Task = { title: task.title, status: targetStatus };
 
       // Acha o índice do primeiro item da coluna alvo e insere antes dele (topo)
       const firstOfTarget = withoutTask.findIndex(t => t.status === targetStatus);
+
+      //atualiza a tasks pelo seguinte se nao existe uma task naquela coluna ainda ele coloca a task la
+      // porem se existir uma task ja ele pega todas as tasks antes da task da nova coluna, 
+      // coloca nossa task depois o resto dela
       const updated = firstOfTarget === -1
           ? [...withoutTask, updatedTask]
           : [...withoutTask.slice(0, firstOfTarget), updatedTask, ...withoutTask.slice(firstOfTarget)];
 
+    //atualiza o estado
       setTasks(updated);
       try {
+        //tenta salvar a task se nao der certo ele volta para o estado anterior
           await invoke("save_project_tasks", { projectPath, tasks: updated });
       } catch (err) {
           setTasks(tasks);
@@ -83,6 +97,10 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
             tasks: tasks.filter(t => t.status === TaskStatus.done),
         },
     ];
+
+    const updateTaskName = useCallback(() => {
+        
+    }, [])
 
     // Adiciona o card de criar na coluna Todo
     const columnsWithCreate = columns.map((col, index) => ({
