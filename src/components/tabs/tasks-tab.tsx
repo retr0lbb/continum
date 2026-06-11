@@ -1,4 +1,3 @@
-import { tv } from "tailwind-variants"
 import { useTaskSelection } from "../../hooks/useTaskSelection"
 import { useProjectTasks } from "../../hooks/useProjectTasks"
 import { useProject } from "../../stores/project.store"
@@ -13,7 +12,7 @@ export function TasksTab(props: TasksTabProps) {
 
     if (!project) return
 
-    const { isLoading, columns, columnsWithCreate, createTask, moveTask } = useProjectTasks({ projectPath: project.path })
+    const { isLoading, columns, columnsWithCreate, createTask, moveTask, deleteTask } = useProjectTasks({ projectPath: project.path })
 
     const { handleKeyDown, isSelected, containerRef, isHovering, isPickedTask } = useTaskSelection(
         columnsWithCreate,
@@ -32,6 +31,13 @@ export function TasksTab(props: TasksTabProps) {
                 if(task.status === "create"){
                     console.log("Hey this task is being created")
                 }
+            },
+            onTaskDelete: (col, row) => {
+                const task = columnsWithCreate[col].tasks[row]
+
+                if(!task || task.status == "create") return
+
+                deleteTask(task)
             },
         }
     )

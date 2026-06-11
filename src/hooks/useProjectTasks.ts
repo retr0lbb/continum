@@ -98,10 +98,6 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
         },
     ];
 
-    const updateTaskName = useCallback(() => {
-        
-    }, [])
-
     // Adiciona o card de criar na coluna Todo
     const columnsWithCreate = columns.map((col, index) => ({
         ...col,
@@ -114,5 +110,16 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
         fetchTasks();
     }, [fetchTasks]);
 
-    return { tasks, columns, columnsWithCreate, isLoading, error, fetchTasks, createTask, moveTask };
+    const deleteTask = useCallback(async (task: Task) => {
+        const updated = tasks.filter(t => !(t.title === task.title && t.status === task.status));
+        setTasks(updated);
+        try {
+            await invoke("save_project_tasks", { projectPath, tasks: updated });
+        } catch (err) {
+            setTasks(tasks);
+            setError(String(err));
+        }
+    }, [projectPath, tasks]);
+
+    return { tasks, columns, columnsWithCreate, isLoading, error, fetchTasks, createTask, moveTask, deleteTask };
 }

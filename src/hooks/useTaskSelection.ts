@@ -9,6 +9,7 @@ interface UseTaskSelectionOptions {
   onMoveTask?: (sourceCol: number, sourceRow: number, targetCol: number) => void;
   canPickUp?: (col: number, row: number) => boolean;
   onActivate?: (col: number, row: number) => void; // <- adiciona
+  onTaskDelete: (col: number, row: number) => void;
 }
 
 export function useTaskSelection(
@@ -44,6 +45,9 @@ export function useTaskSelection(
       } else {
         setPickedTask(null);
       }
+    },
+    keyBindings: {
+      "shift+e": (col, row) => options?.onTaskDelete(col, row)
     }
   });
 

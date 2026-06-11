@@ -1,9 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
+type KeyHandler = (col: number, row: number, e: React.KeyboardEvent) => void;
+
 interface UseGridNavigationConfig {
   colCount: number;
   rowCount: number | ((col: number) => number);
   onActivate?: (col: number, row: number) => void;
+  keyBindings?: Record<string, KeyHandler>
 }
 
 export function useGridNavigation(config: UseGridNavigationConfig) {
@@ -33,14 +36,33 @@ export function useGridNavigation(config: UseGridNavigationConfig) {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)) return;
-      e.preventDefault();
 
-      if (selectedCol === null || selectedRow === null) {
-        setSelectedCol(0);
-        setSelectedRow(0);
+      if(selectedCol === null || selectedRow === null){
+        if(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)){
+          e.preventDefault();
+          setSelectedCol(0);
+          setSelectedRow(0);
+        }
+        return
+      }
+
+      const keyId = [
+        e.ctrlKey && "ctrl",
+        e.shiftKey && "shift",
+        e.altKey && "alt",
+        e.key.toLowerCase()
+      ].filter(Boolean).join("+")
+
+      const customBinding = configRef.current.keyBindings?.[keyId]
+
+      if(customBinding){
+        e.preventDefault()
+        customBinding(selectedCol, selectedRow, e)
         return;
       }
+
+      if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)) return;
+      e.preventDefault();
 
       const { colCount } = configRef.current;
 
