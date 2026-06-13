@@ -121,5 +121,23 @@ export function useProjectTasks({ projectPath }: UseProjectTasksParams) {
         }
     }, [projectPath, tasks]);
 
-    return { tasks, columns, columnsWithCreate, isLoading, error, fetchTasks, createTask, moveTask, deleteTask };
+    const updateTask = useCallback(async (oldTask: Task, newTitle: string) => {
+        if (oldTask.title === newTitle) return;
+
+        const updated = tasks.map(t =>
+            t.title === oldTask.title && t.status === oldTask.status
+                ? { ...t, title: newTitle }
+                : t
+        );
+
+        setTasks(updated);
+        try {
+            await invoke("save_project_tasks", { projectPath, tasks: updated });
+        } catch (err) {
+            setTasks(tasks);
+            setError(String(err));
+        }
+    }, [projectPath, tasks]);
+
+    return { tasks, columns, columnsWithCreate, isLoading, error, fetchTasks, createTask, moveTask, deleteTask, updateTask };
 }

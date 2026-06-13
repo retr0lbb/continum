@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { useTaskSelection } from "../../hooks/useTaskSelection"
 import { useProjectTasks } from "../../hooks/useProjectTasks"
 import { useProject } from "../../stores/project.store"
@@ -12,7 +13,17 @@ export function TasksTab(props: TasksTabProps) {
 
     if (!project) return
 
-    const { isLoading, columns, columnsWithCreate, createTask, moveTask, deleteTask } = useProjectTasks({ projectPath: project.path })
+    const { isLoading, columns, columnsWithCreate, createTask, moveTask, deleteTask, updateTask } = useProjectTasks({ projectPath: project.path })
+
+    const [editingTask, setEditingTask] = useState<{ col: number; row: number } | null>(null);
+    const [editValue, setEditValue] = useState("");
+
+    const handleTaskEdit = useCallback((col: number, row: number) => {
+        const task = columnsWithCreate[col]?.tasks[row] as any;
+        if (!task || task.status === "create") return;
+        setEditingTask({ col, row });
+        setEditValue(task.title);
+    }, [columnsWithCreate]);
 
     const { handleKeyDown, isSelected, containerRef, isHovering, isPickedTask } = useTaskSelection(
         columnsWithCreate,
@@ -39,8 +50,26 @@ export function TasksTab(props: TasksTabProps) {
 
                 deleteTask(task)
             },
+            onTaskEdit: handleTaskEdit,
         }
     )
+
+    const handleEditConfirm = useCallback(() => {
+        if (!editingTask) return;
+        const task = columnsWithCreate[editingTask.col]?.tasks[editingTask.row] as Task;
+        if (task) {
+            updateTask(task, editValue);
+        }
+        setEditingTask(null);
+        setEditValue("");
+        setTimeout(() => containerRef.current?.focus(), 0);
+    }, [editingTask, columnsWithCreate, editValue, updateTask, containerRef]);
+
+    const handleEditCancel = useCallback(() => {
+        setEditingTask(null);
+        setEditValue("");
+        setTimeout(() => containerRef.current?.focus(), 0);
+    }, [containerRef]);
 
     if (isLoading) return <p className="text-zinc-200">Loading...</p>
 
@@ -66,16 +95,24 @@ export function TasksTab(props: TasksTabProps) {
                             isHovering && !isPickedTask(colIndex, 0) ? "bg-main-text/5" : ""
                         }`}
                     >
-                        {col.tasks.map((task, rowIndex) => (
-                            <TaskCard
-                                key={`${col.status}-${rowIndex}`}
-                                status={task.status as TaskStatus | "create"}
-                                text={task.title}
-                                selected={isSelected(colIndex, rowIndex)}
-                                picked={isPickedTask(colIndex, rowIndex)}
-                                onActivate={task.status === "create" ? () => createTask("Nova Task") : undefined}
-                            />
-                        ))}
+                        {col.tasks.map((task, rowIndex) => {
+                            const isEditing = editingTask?.col === colIndex && editingTask?.row === rowIndex;
+                            return (
+                                <TaskCard
+                                    key={`${col.status}-${rowIndex}`}
+                                    status={task.status as TaskStatus | "create"}
+                                    text={task.title}
+                                    selected={isSelected(colIndex, rowIndex)}
+                                    picked={isPickedTask(colIndex, rowIndex)}
+                                    onActivate={task.status === "create" ? () => createTask("Nova Task") : undefined}
+                                    isEditing={isEditing}
+                                    editValue={editValue}
+                                    onEditChange={setEditValue}
+                                    onEditConfirm={handleEditConfirm}
+                                    onEditCancel={handleEditCancel}
+                                />
+                            );
+                        })}
                     </div>
                 ))}
             </div>

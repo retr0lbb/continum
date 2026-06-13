@@ -8,8 +8,9 @@ interface UseTaskSelectionColumn {
 interface UseTaskSelectionOptions {
   onMoveTask?: (sourceCol: number, sourceRow: number, targetCol: number) => void;
   canPickUp?: (col: number, row: number) => boolean;
-  onActivate?: (col: number, row: number) => void; // <- adiciona
+  onActivate?: (col: number, row: number) => void;
   onTaskDelete: (col: number, row: number) => void;
+  onTaskEdit?: (col: number, row: number) => void;
 }
 
 export function useTaskSelection(
@@ -55,7 +56,8 @@ export function useTaskSelection(
       }
     },
     keyBindings: {
-      "shift+e": (col, row) => options?.onTaskDelete(col, row)
+      "shift+e": (col, row) => options?.onTaskDelete(col, row),
+      "shift+q": (col, row) => options?.onTaskEdit?.(col, row),
     },
     isHovering: () => pickedTask !== null,
   });
