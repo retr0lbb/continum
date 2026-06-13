@@ -25,7 +25,7 @@ export function TasksTab(props: TasksTabProps) {
         setEditValue(task.title);
     }, [columnsWithCreate]);
 
-    const { handleKeyDown, isSelected, containerRef, isHovering, isPickedTask } = useTaskSelection(
+    const { handleKeyDown, isSelected, containerRef, isHovering, isPickedTask, selectedCol, pickedCol } = useTaskSelection(
         columnsWithCreate,
         {
             onMoveTask: (sourceCol, sourceRow, targetCol) => {
@@ -90,9 +90,8 @@ export function TasksTab(props: TasksTabProps) {
                 {columnsWithCreate.map((col, colIndex) => (
                     <div
                         key={col.status}
-                        // Highlight na coluna alvo quando tem task picked
                         className={`flex flex-col w-full min-h-0 overflow-y-auto scrollbar-none gap-2 rounded-sm transition-colors ${
-                            isHovering && !isPickedTask(colIndex, 0) ? "bg-main-text/5" : ""
+                            isHovering && selectedCol === colIndex && pickedCol !== colIndex ? "border-2 border-accent" : ""
                         }`}
                     >
                         {col.tasks.map((task, rowIndex) => {
@@ -102,7 +101,7 @@ export function TasksTab(props: TasksTabProps) {
                                     key={`${col.status}-${rowIndex}`}
                                     status={task.status as TaskStatus | "create"}
                                     text={task.title}
-                                    selected={isSelected(colIndex, rowIndex)}
+                                    selected={!isHovering && isSelected(colIndex, rowIndex)}
                                     picked={isPickedTask(colIndex, rowIndex)}
                                     onActivate={task.status === "create" ? () => createTask("Nova Task") : undefined}
                                     isEditing={isEditing}

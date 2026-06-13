@@ -28,32 +28,22 @@ export function useTaskSelection(
     onActivate: (col, row) => {
       const opts = optionsRef.current;
 
-      const canPick = opts?.canPickUp?.(col, row) ?? true;
-
-      if (!canPick) {
-        if (pickedTask === null) {
-          opts?.onActivate?.(col, row);
+      if (pickedTask !== null) {
+        if (pickedTask.col !== col) {
+          opts?.onMoveTask?.(pickedTask.col, pickedTask.row, col);
         }
+        setPickedTask(null);
         return;
       }
 
+      const canPick = opts?.canPickUp?.(col, row) ?? true;
 
       if (!canPick) {
         opts?.onActivate?.(col, row);
         return;
       }
 
-      if (pickedTask === null) {
-        const canPick = opts?.canPickUp?.(col, row) ?? true;
-        if (canPick) {
-          setPickedTask({ col, row });
-        }
-      } else if (pickedTask.col !== col) {
-        opts?.onMoveTask?.(pickedTask.col, pickedTask.row, col);
-        setPickedTask(null);
-      } else {
-        setPickedTask(null);
-      }
+      setPickedTask({ col, row });
     },
     keyBindings: {
       "shift+e": (col, row) => options?.onTaskDelete(col, row),

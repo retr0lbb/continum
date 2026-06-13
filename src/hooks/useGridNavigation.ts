@@ -41,8 +41,19 @@ export function useGridNavigation(config: UseGridNavigationConfig) {
       if(selectedCol === null || selectedRow === null){
         if(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)){
           e.preventDefault();
-          setSelectedCol(0);
-          setSelectedRow(0);
+          const isPicking = configRef.current.isHovering?.();
+          if (!isPicking) {
+            let firstCol = 0;
+            while (firstCol < configRef.current.colCount && getRowCount(firstCol) === 0) {
+              firstCol++;
+            }
+            if (firstCol >= configRef.current.colCount) return;
+            setSelectedCol(firstCol);
+            setSelectedRow(0);
+          } else {
+            setSelectedCol(0);
+            setSelectedRow(0);
+          }
         }
         return
       }
@@ -76,20 +87,24 @@ export function useGridNavigation(config: UseGridNavigationConfig) {
           break;
 
         case "ArrowRight": {
-            const newCol = Math.min(colCount - 1, selectedCol + 1);
-            const isEmpty = getRowCount(newCol) === 0;
-            const isPicking = configRef.current.isHovering?.(); // <- precisamos disso
-            if (isEmpty && !isPicking) break;
+            let newCol = selectedCol + 1;
+            const isPicking = configRef.current.isHovering?.();
+            while (newCol < colCount && getRowCount(newCol) === 0 && !isPicking) {
+              newCol++;
+            }
+            if (newCol >= colCount) break;
             setSelectedCol(newCol);
             setSelectedRow(Math.min(selectedRow, Math.max(0, getRowCount(newCol) - 1)));
             break;
         }
 
         case "ArrowLeft": {
-            const newCol = Math.max(0, selectedCol - 1);
-            const isEmpty = getRowCount(newCol) === 0;
+            let newCol = selectedCol - 1;
             const isPicking = configRef.current.isHovering?.();
-            if (isEmpty && !isPicking) break;
+            while (newCol >= 0 && getRowCount(newCol) === 0 && !isPicking) {
+              newCol--;
+            }
+            if (newCol < 0) break;
             setSelectedCol(newCol);
             setSelectedRow(Math.min(selectedRow, Math.max(0, getRowCount(newCol) - 1)));
             break;
