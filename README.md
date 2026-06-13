@@ -5,3 +5,18 @@ This template should help get you started developing with Tauri, React and Types
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+
+# minimum features for deploy (MVP)
+- [ ] it needs to be able to crud tasks
+- [ ] it needs to be able to crud projects
+- [ ] it needs to have full keyboard navigation
+- [ ] it need to save and load notes
+
+
+## Extra features for some day (IDEIA DUMP)
+- [ ] would be good if it has some kind of sound sistem for better reward brain stim
+- [ ] would be nice if it has a mouse drag and drop for tasks in columns
+- [ ] would be very nice if it has obsidian 100% integration (reading and writing files from it)
+- [ ] would be very nice to add framer motion and add animations on task cards
+- [ ] would be good if it had cloud storage
+ 
