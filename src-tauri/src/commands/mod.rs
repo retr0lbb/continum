@@ -5,3 +5,4 @@ pub mod load_workspace;
 pub mod init_project;
 pub mod sessions;
 pub mod tasks;
+pub mod notes;

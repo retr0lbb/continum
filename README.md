@@ -8,9 +8,9 @@ This template should help get you started developing with Tauri, React and Types
 
 # minimum features for deploy (MVP)
 - [x] it needs to be able to crud tasks(All tasks have create read update and delete)
+- [ ] it need to save and load notes
 - [ ] it needs to be able to crud projects
 - [ ] it needs to have full keyboard navigation
-- [ ] it need to save and load notes
 
 
 ## Extra features for some day (IDEIA DUMP)
