@@ -1,7 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { WeeklySquares } from "../../components/weekly-squares";
 import { Tab, TabSwitcher } from "../../components/tabSwitcher";
-import { SummaryTab } from "../../components/tabs/summary-tab";
 import { TasksTab } from "../../components/tabs/tasks-tab";
 import { NotesTab } from "../../components/tabs/notes-tab";
 import { useState } from "react";
@@ -14,7 +13,7 @@ import { ActiveCounter } from "../../components/active-conter";
 
 export function MainPage() {
 
-    const [tab, setTab] = useState<"task" | "summary" | "notes">("summary")
+    const [tab, setTab] = useState<"task" | "notes">("task")
     const {project, setProject} = useProject()
     const navigator = useNavigate();
     const { closeProjectSession } = useSessions();
@@ -58,14 +57,12 @@ export function MainPage() {
         <div className="w-full h-px bg-main-text/10" />
 
         <TabSwitcher>
-            <Tab onClick={() => setTab("summary")} name="Summary" isSelected={tab === "summary"} />
             <Tab onClick={() => setTab("task")} name="Tasks" isSelected={tab === "task"} />
             <Tab onClick={() => setTab("notes")} name="Notes" isSelected={tab === "notes"} />
         </TabSwitcher>
 
         <div className="w-full h-px bg-main-text/10" />
 
-        <SummaryTab isVisible={tab === "summary"} />
         <TasksTab isVisible={tab === "task"} />
         <NotesTab isVisible={tab === "notes"} />
     </main>
