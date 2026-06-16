@@ -11,6 +11,7 @@ This template should help get you started developing with Tauri, React and Types
 - [x] it need to save and load notes
 - [x] it needs to be able to crud projects
 - [ ] it needs to have full keyboard navigation
+- [ ] it needs to have a custom font, using google fonts
 
 
 ## Extra features for some day (IDEIA DUMP)

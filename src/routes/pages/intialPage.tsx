@@ -76,7 +76,7 @@ export function InitialPage() {
     }
 
 
-    return <main className="w-screen h-screen bg-background-main flex flex-col p-3 gap-2">
+    return <main className="w-screen h-screen bg-background-main flex flex-col p-3 gap-2 overflow-hidden">
         <CreateProjectModal 
             handleSubmit={async (f) => {
                 if(!workspace){
@@ -142,7 +142,7 @@ export function InitialPage() {
                         ref={containerRef}
                         onKeyDown={handleKeyDown}
                         tabIndex={0}
-                        className="flex flex-1 flex-wrap gap-6 items-start outline-none"
+                        className="flex flex-1 flex-wrap gap-6 items-start outline-none overflow-y-auto overflow-x-hidden"
                     >
                         {repos.map((repo, index) => {
                             return(
