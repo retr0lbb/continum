@@ -91,5 +91,24 @@ export function useWorkspace() {
         return data;
     }
 
-    return { workspace, repos, loading, selectWorkspace, initProject, openProject };
+    async function createProjectFolder(wsPath: string, folderName: string){
+        try {
+            const newRepo = await invoke<Project>("create_project_folder", {path: wsPath, name: folderName})
+            setRepos((prev) => 
+                [...prev, 
+                    {
+                        name: newRepo.name, 
+                        last_opened: newRepo.last_opened, 
+                        initialized: true,
+                        path: newRepo.path
+                    }
+                ])
+        } catch (error) {
+            setRepos(repos)
+        }
+    }
+
+
+
+    return { workspace, repos, loading, selectWorkspace, initProject, openProject, createProjectFolder };
 }

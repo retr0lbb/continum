@@ -46,7 +46,7 @@ export function ProjectLabel(props: ProjectLabelProps) {
             </div>
 
             <p className={textVariant({ selected: props.isSelected })}>{props.name}</p>
-            <p className="text-muted-text pl-2">{dayjs(props.lastUpdate).fromNow()} dias atrás</p>
+            <p className="text-muted-text pl-2">{dayjs(props.lastUpdate).fromNow()} atrás</p>
         </div>
     )
 }

@@ -5,11 +5,21 @@ import { useProjectSelection } from "../../hooks/useProjectSelection";
 import { ProjectLabel } from "../../components/project-label";
 import { useProject } from "../../stores/project.store";
 import { Project } from "../../types/project.type";
+import { useState } from "react";
+import { CreateProjectModal } from "../../components/create-project-modal";
+
+export enum ModalTypeOpen {
+    NONE = 0,
+    CREATE_TASK,
+    DELETE_TASK,
+    UPDATE_TASK
+}
 
 export function InitialPage() {
     const navigate = useNavigate();
-    const {workspace, selectWorkspace, initProject, loading, openProject, repos} = useWorkspace()
+    const {workspace, selectWorkspace, initProject, loading, openProject, repos, createProjectFolder} = useWorkspace()
     const {project, setProject} = useProject()
+    const [modalOpen, setModalOpen] = useState<ModalTypeOpen>(ModalTypeOpen.NONE)
 
     async function handleOpenProject(path: string) {
     try {
@@ -18,7 +28,6 @@ export function InitialPage() {
         try {
             data = await openProject(path);
         } catch {
-            // Se falhou, tenta inicializar
             data = await initProject(path);
         }
 
@@ -30,8 +39,18 @@ export function InitialPage() {
     }
 
     const { handleKeyDown, isSelected, containerRef } = useProjectSelection(
-        repos,
-        (repo) => handleOpenProject(repo.path)
+        {
+            repos: repos,
+            onActivate: (repo) => handleOpenProject(repo.path),
+            onCreateProject: () => {
+                console.log("HIT")
+                setModalOpen(ModalTypeOpen.CREATE_TASK)
+            },
+            onDeleteProject: () => {},
+            onUpdateProject: (repo) => {
+                
+            },
+        }
     );
 
     if(project !== null){
@@ -41,6 +60,17 @@ export function InitialPage() {
 
 
     return <main className="w-screen h-screen bg-background-main flex flex-col p-3 gap-2">
+        <CreateProjectModal 
+            handleSubmit={async (f) => {
+                if(!workspace){
+                    return;
+                }
+                await createProjectFolder(workspace.path, f)
+                setModalOpen(ModalTypeOpen.NONE)
+            }} 
+            closeModal={() => setModalOpen(ModalTypeOpen.NONE)} 
+            modalState={modalOpen} 
+        />
         {
             loading 
             ? (

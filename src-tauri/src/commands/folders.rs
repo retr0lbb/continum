@@ -9,7 +9,7 @@ pub struct FolderEntry {
 
 #[tauri::command]
 pub fn list_workspace_folders(workspace_path: String) -> Result<Vec<FolderEntry>, String> {
-    let entries = fs::read_dir(&workspace_path)
+    let entries: fs::ReadDir = fs::read_dir(&workspace_path)
         .map_err(|e| format!("Failed to read directory '{}': {}", workspace_path, e))?;
 
     let mut folders = Vec::new();

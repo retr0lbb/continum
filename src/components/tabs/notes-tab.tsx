@@ -11,11 +11,9 @@ export function NotesTab(props: NotesTabProps){
     if (!project) return
 
     const {
-        error,  
         isLoading, 
         isSaving, 
         note, 
-        saveNote, 
         setNote
     } = useProjectNotes({projectPath: project.path})
 
