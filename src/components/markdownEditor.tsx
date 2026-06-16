@@ -1,6 +1,7 @@
 import CodeMirror from "@uiw/react-codemirror"
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import { syntaxHighlighting, HighlightStyle } from "@codemirror/language"
+import { EditorView } from "@codemirror/view"
 import { tags } from "@lezer/highlight"
 
 const markdownHeadingStyle = syntaxHighlighting(
@@ -36,7 +37,7 @@ export function MarkdownEditor({
       width="100%"
       placeholder={placeholder}
       theme="dark"
-      extensions={[markdown({ base: markdownLanguage }), markdownHeadingStyle]}
+      extensions={[markdown({ base: markdownLanguage }), markdownHeadingStyle, EditorView.lineWrapping]}
       onChange={(value) => onChange?.(value)}
       className="w-full overflow-y-scroll overflow-x-hidden border max-h-full border-main-text/20 rounded scrollbar-none"
       basicSetup={{
