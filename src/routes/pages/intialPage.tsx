@@ -8,6 +8,7 @@ import { Project, ProjectInfo } from "../../types/project.type";
 import { useState } from "react";
 import { CreateProjectModal } from "../../components/create-project-modal";
 import { DeleteProjectModal } from "../../components/delete-project-modal";
+import { UpdateProjectModal } from "../../components/update-project-modal";
 
 export enum ModalTypeOpen {
     NONE = 0,
@@ -26,7 +27,8 @@ export function InitialPage() {
         openProject, 
         repos, 
         createProjectFolder, 
-        deleteProject
+        deleteProject,
+        updateProject
     } = useWorkspace()
 
     const {project, setProject} = useProject()
@@ -62,7 +64,8 @@ export function InitialPage() {
                 setModalOpen(ModalTypeOpen.DELETE_TASK)
             },
             onUpdateProject: (repo) => {
-                
+                setSelectedProject(repo)
+                setModalOpen(ModalTypeOpen.UPDATE_TASK)
             },
         }
     );
@@ -96,6 +99,19 @@ export function InitialPage() {
                     }
                     await deleteProject(workspace.path, selectedProject.path)
 
+                    setModalOpen(ModalTypeOpen.NONE)
+                }}
+                project={selectedProject}
+            />
+        }
+
+        {selectedProject &&
+            <UpdateProjectModal
+                closeModal={() => setModalOpen(ModalTypeOpen.NONE)}
+                modalState={modalOpen}
+                handleSubmit={async (newName) => {
+                    if(!workspace) return;
+                    await updateProject(selectedProject.path, newName)
                     setModalOpen(ModalTypeOpen.NONE)
                 }}
                 project={selectedProject}

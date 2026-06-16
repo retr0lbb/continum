@@ -4,6 +4,7 @@ import { WorkspaceConfig } from "../types/workspace.type";
 import { Project, ProjectInfo } from "../types/project.type";
 import { useSessions } from "./useSessions";
 import { useSessionStore } from "../stores/session.store";
+import { Inbox } from "lucide-react";
 
 
 export function useWorkspace() {
@@ -118,7 +119,24 @@ export function useWorkspace() {
         }
     }
 
+    async function updateProject(projectPath: string, newName: string){
+        try {
+            const projectsWithoutTarget = repos.filter(val => val.path !== projectPath)
+
+            const renamedProject = await invoke<Project>("rename_project_folder", {projectPath, newName})
+
+            if(!renamedProject){
+                throw new Error("Something went Wrong on rename")
+            }
+
+            setRepos([...projectsWithoutTarget, {initialized: true, last_opened: renamedProject.last_opened, name: renamedProject.name, path: renamedProject.path}])
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 
-    return { workspace, repos, loading, selectWorkspace, initProject, openProject, createProjectFolder, deleteProject };
+
+    return { workspace, repos, loading, selectWorkspace, initProject, openProject, createProjectFolder, deleteProject, updateProject };
 }
