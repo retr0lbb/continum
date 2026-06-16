@@ -1,8 +1,9 @@
 import { ModalTypeOpen } from "../routes/pages/intialPage";
+import { validateFolderName } from "../utils/validate-project-name";
 import { Modal, ModalContent } from "./modal";
 
 
-interface CreateProjectModal{
+interface CreateProjectModalProps{
     modalState: ModalTypeOpen,
     closeModal: () => void,
     handleSubmit(folderName: string): void
@@ -12,14 +13,16 @@ function CreateProjectModalForm({ handleSubmit }: { handleSubmit: (folderName: s
     function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const folderName = new FormData(e.currentTarget).get("folderName");
+        const folderName = new FormData(e.currentTarget).get("folderName")?.toString();
 
-        if (!folderName) {
-            console.log("Impossivel pasta sem nome");
+        const { valid, error } = validateFolderName(folderName ?? "");
+
+        if (!valid) {
+            console.log(error);
             return;
         }
 
-        handleSubmit(folderName.toString());
+        handleSubmit(folderName ?? "");
     }
 
     return (
@@ -48,7 +51,7 @@ function CreateProjectModalForm({ handleSubmit }: { handleSubmit: (folderName: s
     )
 }
 
-export function CreateProjectModal(props: CreateProjectModal){
+export function CreateProjectModal(props: CreateProjectModalProps){
 
     return(
         <Modal onHide={props.closeModal} isOpen={props.modalState === ModalTypeOpen.CREATE_TASK}>

@@ -15,8 +15,8 @@ export function useProjectSelection({onActivate, onCreateProject, onDeleteProjec
     rowCount: repos.length,
     onActivate: (_col, row) => onActivate(repos[row], row),
     keyBindings: {
-      "shift+e": (col, row) => onDeleteProject(repos[row]),
-      "shift+q": (col, row) => onUpdateProject(repos[row]),
+      "shift+e": (_col, row) => onDeleteProject(repos[row]),
+      "shift+q": (_col, row) => onUpdateProject(repos[row]),
       "shift+n": () =>  onCreateProject()
     }
   });

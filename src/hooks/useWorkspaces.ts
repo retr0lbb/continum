@@ -108,7 +108,17 @@ export function useWorkspace() {
         }
     }
 
+    async function deleteProject(wsPath: string, projectPath: string){
+        try {
+            await invoke("delete_project", {workspacePath:wsPath , projectPath: projectPath})
+            const filteredRepos = repos.filter(val => val.path !== projectPath)
+            setRepos(filteredRepos)
+        } catch (error) {
+            console.log(error)   
+        }
+    }
 
 
-    return { workspace, repos, loading, selectWorkspace, initProject, openProject, createProjectFolder };
+
+    return { workspace, repos, loading, selectWorkspace, initProject, openProject, createProjectFolder, deleteProject };
 }

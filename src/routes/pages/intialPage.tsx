@@ -4,9 +4,10 @@ import { useWorkspace } from "../../hooks/useWorkspaces";
 import { useProjectSelection } from "../../hooks/useProjectSelection";
 import { ProjectLabel } from "../../components/project-label";
 import { useProject } from "../../stores/project.store";
-import { Project } from "../../types/project.type";
+import { Project, ProjectInfo } from "../../types/project.type";
 import { useState } from "react";
 import { CreateProjectModal } from "../../components/create-project-modal";
+import { DeleteProjectModal } from "../../components/delete-project-modal";
 
 export enum ModalTypeOpen {
     NONE = 0,
@@ -17,8 +18,19 @@ export enum ModalTypeOpen {
 
 export function InitialPage() {
     const navigate = useNavigate();
-    const {workspace, selectWorkspace, initProject, loading, openProject, repos, createProjectFolder} = useWorkspace()
+    const {
+        workspace, 
+        selectWorkspace, 
+        initProject, 
+        loading, 
+        openProject, 
+        repos, 
+        createProjectFolder, 
+        deleteProject
+    } = useWorkspace()
+
     const {project, setProject} = useProject()
+    const [selectedProject, setSelectedProject] = useState<ProjectInfo | null>(null)
     const [modalOpen, setModalOpen] = useState<ModalTypeOpen>(ModalTypeOpen.NONE)
 
     async function handleOpenProject(path: string) {
@@ -45,7 +57,10 @@ export function InitialPage() {
             onCreateProject: () => {
                 setModalOpen(ModalTypeOpen.CREATE_TASK)
             },
-            onDeleteProject: () => {},
+            onDeleteProject: (repo) => {
+                setSelectedProject(repo)
+                setModalOpen(ModalTypeOpen.DELETE_TASK)
+            },
             onUpdateProject: (repo) => {
                 
             },
@@ -70,6 +85,23 @@ export function InitialPage() {
             closeModal={() => setModalOpen(ModalTypeOpen.NONE)} 
             modalState={modalOpen} 
         />
+
+        {selectedProject && 
+            <DeleteProjectModal 
+                closeModal={() => setModalOpen(ModalTypeOpen.NONE)} 
+                modalState={modalOpen}
+                handleSubmit={async() => {
+                    if(!workspace){
+                        return;
+                    }
+                    await deleteProject(workspace.path, selectedProject.path)
+
+                    setModalOpen(ModalTypeOpen.NONE)
+                }}
+                project={selectedProject}
+            />
+        }
+
         {
             loading 
             ? (

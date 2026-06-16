@@ -21,12 +21,6 @@ export function MainPage() {
     const activeProjectPath = useSessionStore((s) => s.activeProjectPath);
     const clearProjectSession = useSessionStore((s) => s.clearProjectSession);
 
-    if(!project){
-        console.log("Projeto nao carregado voltando a estaca 00")
-        returnToMain()
-        return
-    }
-
     async function returnToMain() {
         if (activeProjectPath) {
             await closeProjectSession(activeProjectPath);
@@ -35,6 +29,13 @@ export function MainPage() {
         setProject(null)
         navigator("/");
     }
+
+    if(!project){
+        console.log("Projeto nao carregado voltando a estaca 00")
+        returnToMain()
+        return
+    }
+
 
     if(!project){
         return <p> No project here </p>

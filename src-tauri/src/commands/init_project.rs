@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fmt::format, fs};
 use std::path::Path;
 use serde::{Deserialize, Serialize};
 
@@ -150,4 +150,39 @@ pub fn rename_project_folder(project_path: String, new_name: String) -> Result<P
         .map_err(|e| format!("Erro ao salvar project.json: {}", e))?;
 
     Ok(project)
+}
+
+#[tauri::command]
+pub fn delete_project(workspace_path: String, project_path: String)-> Result<(), String>{
+    let workspace = Path::new(&workspace_path).canonicalize()
+        .map_err(|e| format!("Invalid Workspace: {}", e))?;
+    
+    let project = Path::new(&project_path).canonicalize()
+        .map_err(|e| format!("Projeto inválido: {}", e))?;
+
+    if !project.starts_with(&workspace){
+        return Err("Project Outside Workspace".to_string());
+    }
+
+    if project == workspace {
+        return Err("Não é possível deletar o workspace".to_string());
+    }
+
+    if !project.is_dir() {
+        return Err("Caminho não é um diretório".to_string());
+    }
+
+    let depth = project.strip_prefix(&workspace)
+        .map_err(|_| "Erro ao calcular profundidade".to_string())?
+        .components()
+        .count();
+
+    if depth != 1{
+        return Err("Só é possível deletar pastas diretas do workspace".to_string());
+    }
+
+    fs::remove_dir_all(&project)
+        .map_err(|e| format!("Erro ao deletar projeto: {}", e))?;
+
+    Ok(())
 }
