@@ -9,6 +9,8 @@ interface TaskCardProps {
     picked?: boolean;
     className?: string;
     onActivate?: () => void;
+    onDoubleClick?: () => void;
+    onLongPress?: () => void;
     isEditing?: boolean;
     editValue?: string;
     onEditChange?: (value: string) => void;
@@ -56,6 +58,8 @@ const editInputVariants = tv({
 
 export function TaskCard(props: TaskCardProps) {
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const longPressTriggered = useRef(false);
 
     useEffect(() => {
         if (props.isEditing && inputRef.current) {
@@ -63,6 +67,12 @@ export function TaskCard(props: TaskCardProps) {
             inputRef.current.select();
         }
     }, [props.isEditing]);
+
+    useEffect(() => {
+        return () => {
+            if (longPressTimer.current) clearTimeout(longPressTimer.current);
+        };
+    }, []);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
@@ -75,6 +85,29 @@ export function TaskCard(props: TaskCardProps) {
             e.stopPropagation();
         }
     }, [props.onEditConfirm, props.onEditCancel]);
+
+    const handleMouseDown = useCallback(() => {
+        longPressTriggered.current = false;
+        longPressTimer.current = setTimeout(() => {
+            longPressTriggered.current = true;
+            props.onLongPress?.();
+        }, 600);
+    }, [props.onLongPress]);
+
+    const handleMouseUp = useCallback(() => {
+        if (longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+            longPressTimer.current = null;
+        }
+    }, []);
+
+    const handleClick = useCallback(() => {
+        if (longPressTriggered.current) {
+            longPressTriggered.current = false;
+            return;
+        }
+        props.onActivate?.();
+    }, [props.onActivate]);
 
     if (props.isEditing) {
         return (
@@ -100,7 +133,11 @@ export function TaskCard(props: TaskCardProps) {
                 picked: props.picked
             })}
             data-selected={props.selected ? "true" : undefined}
-            onClick={props.onActivate}
+            onClick={handleClick}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onDoubleClick={props.onDoubleClick}
         >
             {props.text}
         </p>

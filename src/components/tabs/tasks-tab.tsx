@@ -25,7 +25,7 @@ export function TasksTab(props: TasksTabProps) {
         setEditValue(task.title);
     }, [columnsWithCreate]);
 
-    const { handleKeyDown, isSelected, containerRef, isHovering, isPickedTask, selectedCol, pickedCol } = useTaskSelection(
+    const { handleKeyDown, isSelected, containerRef, isHovering, isPickedTask, selectedCol, pickedCol, activateTask, deleteTask: selectionDeleteTask, editTask: selectionEditTask } = useTaskSelection(
         columnsWithCreate,
         {
             onMoveTask: (sourceCol, sourceRow, targetCol) => {
@@ -93,6 +93,12 @@ export function TasksTab(props: TasksTabProps) {
                         className={`flex flex-col w-full min-h-0 overflow-y-auto scrollbar-none gap-2 rounded-sm transition-colors ${
                             isHovering && selectedCol === colIndex && pickedCol !== colIndex ? "border-2 border-accent" : ""
                         }`}
+                        onClick={(e) => {
+                            if (e.target !== e.currentTarget) return;
+                            if (pickedCol !== null && pickedCol !== colIndex) {
+                                activateTask(colIndex, 0);
+                            }
+                        }}
                     >
                         {col.tasks.map((task, rowIndex) => {
                             const isEditing = editingTask?.col === colIndex && editingTask?.row === rowIndex;
@@ -103,7 +109,9 @@ export function TasksTab(props: TasksTabProps) {
                                     text={task.title}
                                     selected={!isHovering && isSelected(colIndex, rowIndex)}
                                     picked={isPickedTask(colIndex, rowIndex)}
-                                    onActivate={task.status === "create" ? () => createTask("Nova Task") : undefined}
+                                    onActivate={() => activateTask(colIndex, rowIndex)}
+                                    onDoubleClick={task.status !== "create" ? () => selectionEditTask(colIndex, rowIndex) : undefined}
+                                    onLongPress={task.status !== "create" ? () => selectionDeleteTask(colIndex, rowIndex) : undefined}
                                     isEditing={isEditing}
                                     editValue={editValue}
                                     onEditChange={setEditValue}
