@@ -43,7 +43,6 @@ export function InitialPage() {
             repos: repos,
             onActivate: (repo) => handleOpenProject(repo.path),
             onCreateProject: () => {
-                console.log("HIT")
                 setModalOpen(ModalTypeOpen.CREATE_TASK)
             },
             onDeleteProject: () => {},
