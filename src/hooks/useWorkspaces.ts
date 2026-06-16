@@ -4,7 +4,6 @@ import { WorkspaceConfig } from "../types/workspace.type";
 import { Project, ProjectInfo } from "../types/project.type";
 import { useSessions } from "./useSessions";
 import { useSessionStore } from "../stores/session.store";
-import { Inbox } from "lucide-react";
 
 
 export function useWorkspace() {
