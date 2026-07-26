@@ -4,10 +4,12 @@ import { useProjectTasks } from "../../hooks/useProjectTasks"
 import { useProject } from "../../stores/project.store"
 import { Task, TaskStatus } from "../../types/tasks.type"
 import { TaskCard } from "../task-card"
+import { Sound, SoundBuilder } from "../../utils/audio-generate"
 
 interface TasksTabProps {
     isVisible?: boolean
 }
+
 export function TasksTab(props: TasksTabProps) {
     const { project } = useProject()
 
@@ -32,6 +34,8 @@ export function TasksTab(props: TasksTabProps) {
                 const task = columnsWithCreate[sourceCol].tasks[sourceRow] as Task;
                 const targetStatus = columnsWithCreate[targetCol].status as TaskStatus;
                 moveTask(task, targetStatus);
+                Sound.Builder.setNote("B4").setOscType("sine").build().play()
+
             },
             canPickUp: (col, row) => {
                 const task = columnsWithCreate[col].tasks[row] as any;
@@ -42,6 +46,7 @@ export function TasksTab(props: TasksTabProps) {
                 if(task.status === "create"){
                     createTask("Nova Task")
                 }
+                Sound.Builder.setNote("A4").setOscType("sawtooth").build().play()
             },
             onTaskDelete: (col, row) => {
                 const task = columnsWithCreate[col].tasks[row]
@@ -49,6 +54,8 @@ export function TasksTab(props: TasksTabProps) {
                 if(!task || task.status == "create") return
 
                 deleteTask(task)
+                Sound.Builder.setNote("E4").setOscType("triangle").build().play()
+
             },
             onTaskEdit: handleTaskEdit,
         }
