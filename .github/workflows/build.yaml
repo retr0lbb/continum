@@ -1,0 +1,60 @@
+name: Generate Build
+
+on:
+    release: 
+        types: [published]
+
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                include:
+                    - os: windows-latest
+                    - os: ubuntu-latest
+                    - os: macos-latest
+        runs-on: ${{matrix.os}}
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                node-version: 22
+
+            - uses: dtolnay/rust-toolchain@stable
+
+            - run: node --version
+
+            - run: cargo --version
+
+            - run: rustc --version
+
+            - run: ls
+
+            # - uses: actions/checkout@v4
+
+            # - name: Show Os
+            #   run: echo $RUNNER_OS
+
+            # - uses: actions/setup-node@v4
+            #   with:
+            #       node-version: 22
+
+            # - name: show node version
+            #   run: node --version
+
+            # - uses: dtolnay/rust-toolchain@stable
+
+            # - name: show rust installation
+            #   run: cargo --version
+
+            # - name: Install deps
+            #   run: npm install
+
+            # - name: Build React
+            #   run: npm run build
+
+            # - name: tauri build
+            #   run: npm run tauri build
+
