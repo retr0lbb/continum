@@ -4,7 +4,7 @@ import { useProjectTasks } from "../../hooks/useProjectTasks"
 import { useProject } from "../../stores/project.store"
 import { Task, TaskStatus } from "../../types/tasks.type"
 import { TaskCard } from "../task-card"
-import { Sound, SoundBuilder } from "../../utils/audio-generate"
+import { Sound } from "../../utils/audio-generate"
 
 interface TasksTabProps {
     isVisible?: boolean
