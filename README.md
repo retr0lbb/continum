@@ -16,6 +16,7 @@ This template should help get you started developing with Tauri, React and Types
 
 ## Extra features for some day (IDEIA DUMP)
 - [x] would be good if it has some kind of sound sistem for better reward brain stim
+- [ ] would be nice if it had some kind of animation and motion
 - [ ] would be nice if it has a mouse drag and drop for tasks in columns
 - [ ] would be very nice if it has obsidian 100% integration (reading and writing files from it)
 - [ ] would be very nice to add framer motion and add animations on task cards
