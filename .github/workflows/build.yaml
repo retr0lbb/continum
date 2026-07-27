@@ -3,6 +3,10 @@ name: Generate Build
 on:
   workflow_dispatch:
 
+  push: 
+    tags: 
+      - "v*"
+
 
 
 jobs:
