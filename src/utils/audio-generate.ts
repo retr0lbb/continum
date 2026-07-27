@@ -1,5 +1,3 @@
-const ctx = new AudioContext();
-
 const notes = {
     C4: 261.63,
     D4: 293.66,
@@ -9,60 +7,62 @@ const notes = {
     A4: 440.00,
     B4: 493.88,
     C5: 523.25
-} as const // importante: "as const" trava os valores como literais e o objeto como readonly
+} as const
 
 type NotesKeys = keyof typeof notes
+type Note = NotesKeys | number
+type NoteInput = Note | Note[] // string única ou acorde (array)
 
+interface PlayOptions {
+    osc?: OscillatorType
+    duration?: number // segundos, tempo total até o som sumir
+    gain?: number      // volume de pico (0 a 1)
+}
 
-export class Sound{
-    constructor(
-        public oscType: OscillatorType,
-        public notes: NotesKeys | number,
-    ){}
+let sharedCtx: AudioContext | null = null
+function getContext() {
+    if (!sharedCtx) sharedCtx = new AudioContext()
+    return sharedCtx
+}
 
-    static get Builder(){
-        return new SoundBuilder()
-    }
+export const Sound = {
+    async play(note: NoteInput, options: PlayOptions = {}) {
+        const { osc = "square", duration = 0.05, gain = 0.1 } = options
+        const ctx = getContext()
 
-    async play(){
-        if (ctx.state === "suspended") {
-            await ctx.resume();
-        }
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        if (ctx.state === "suspended") await ctx.resume()
 
-        osc.type = this.oscType
-        osc.frequency.value = (typeof this.notes === "string"? notes[this.notes]: this.notes);
+        const freqs = Array.isArray(note) ? note : [note]
 
-        gain.gain.setValueAtTime(0.1, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            ctx.currentTime + 0.05
-        );
+        freqs.forEach(n => {
+            const oscNode = ctx.createOscillator()
+            const gainNode = ctx.createGain()
 
-        osc.connect(gain);
-        gain.connect(ctx.destination);
+            oscNode.type = osc
+            oscNode.frequency.value = typeof n === "string" ? notes[n] : n
 
-        osc.start();
-        osc.stop(ctx.currentTime + 0.05);
+            gainNode.gain.setValueAtTime(gain, ctx.currentTime)
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration)
+
+            oscNode.connect(gainNode).connect(ctx.destination)
+            oscNode.start()
+            oscNode.stop(ctx.currentTime + duration)
+        })
     }
 }
 
-export class SoundBuilder{
-    public oscType!: OscillatorType
-    public notes!: NotesKeys | number
-
-    setOscType(type: OscillatorType){
-        this.oscType = type
-        return this
-    }
-
-    setNote(note: NotesKeys | number){
-        this.notes = note
-        return this
-    }
-
-    build(): Sound{
-        return new Sound(this.oscType, this.notes)
-    }
+export function generateCompleteTaskSound(){
+    // composto: pequeno arpejo ascendente, tipo "conquista"
+    const sequence: { note: NoteInput; delay: number }[] = [
+        { note: "C4", delay: 0 },
+        { note: "E4", delay: 60 },
+        { note: "G4", delay: 120 },
+        { note: ["C5", "E4", "G4"], delay: 180 }, // acorde final
+    ]
+    
+    sequence.forEach(({ note, delay }) => {
+        setTimeout(() => {
+            Sound.play(note, { osc: "square", duration: 0.12, gain: 0.09 })
+        }, delay)
+    })
 }

@@ -25,6 +25,9 @@ export function TasksTab(props: TasksTabProps) {
         if (!task || task.status === "create") return;
         setEditingTask({ col, row });
         setEditValue(task.title);
+
+        Sound.play("A4", { osc: "triangle", duration: 0.08, gain: 0.1 })
+
     }, [columnsWithCreate]);
 
     const { handleKeyDown, isSelected, containerRef, isHovering, isPickedTask, selectedCol, pickedCol, activateTask, deleteTask: selectionDeleteTask, editTask: selectionEditTask } = useTaskSelection(
@@ -34,7 +37,7 @@ export function TasksTab(props: TasksTabProps) {
                 const task = columnsWithCreate[sourceCol].tasks[sourceRow] as Task;
                 const targetStatus = columnsWithCreate[targetCol].status as TaskStatus;
                 moveTask(task, targetStatus);
-                Sound.Builder.setNote("B4").setOscType("sine").build().play()
+                Sound.play("E4", { osc: "square", duration: 0.04, gain: 0.08 })
 
             },
             canPickUp: (col, row) => {
@@ -45,8 +48,8 @@ export function TasksTab(props: TasksTabProps) {
                 const task = columnsWithCreate[col]?.tasks[row];
                 if(task.status === "create"){
                     createTask("Nova Task")
+                    Sound.play("C5", { osc: "square", duration: 0.03, gain: 0.06 })
                 }
-                Sound.Builder.setNote("A4").setOscType("sawtooth").build().play()
             },
             onTaskDelete: (col, row) => {
                 const task = columnsWithCreate[col].tasks[row]
@@ -54,7 +57,7 @@ export function TasksTab(props: TasksTabProps) {
                 if(!task || task.status == "create") return
 
                 deleteTask(task)
-                Sound.Builder.setNote("E4").setOscType("triangle").build().play()
+                Sound.play("C4", { osc: "sawtooth", duration: 0.15, gain: 0.12 })
 
             },
             onTaskEdit: handleTaskEdit,
